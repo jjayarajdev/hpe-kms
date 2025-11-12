@@ -1,0 +1,567 @@
+{
+  "metadata": {
+    "source_file": "sample.txt",
+    "source_document": "Architecture for Semantic Historical Case Search (VectorDB) - Case fields section",
+    "extraction_date": "2025-11-11",
+    "total_source_tables": 6,
+    "total_fields": 31,
+    "notes": "Data extracted from PDF Case fields table mapping"
+  },
+  "architecture_notes": {
+    "vector_strategy": "Separate Issue and Resolution vectors (NOT single composite vector)",
+    "hybrid_search": "Combines lexical search (metadata filtering) + vector search (semantic similarity)",
+    "pii_removal": "Required before vectorization - removes addresses, serial numbers, IPs, customer names, personal emails"
+  },
+  "source_tables": {
+    "Case": {
+      "table_type": "Primary",
+      "udp_table": "vw_de_sfdc_case_snapshot",
+      "description": "Main case table with issue and resolution details",
+      "field_count": 20,
+      "fields": [
+        {
+          "sfdc_field": "Case_Resolution_Summary__c",
+          "udp_field": "case_resolution_summary",
+          "lexical_search": true,
+          "vector_search": "Resolution",
+          "response_field": false,
+          "description": "Summary of case resolution"
+        },
+        {
+          "sfdc_field": "CaseNumber",
+          "udp_field": "casenumber",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_field": true,
+          "description": "Pan HPE case number in the format 5xxxxxxxxx"
+        },
+        {
+          "sfdc_field": "Cause_Plain_Text__c",
+          "udp_field": "cause_plain_text",
+          "lexical_search": true,
+          "vector_search": "Issue",
+          "response_field": false,
+          "description": "Root cause analysis",
+          "examples": [
+            "DIMM failure",
+            "HDD faillure",
+            "Storage Degradation",
+            "4H - HPE StoreEver MSL6480 Tape Library - Tape drive broken"
+          ]
+        },
+        {
+          "sfdc_field": "Close_Comments__c",
+          "udp_field": "close_comments",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_field": false,
+          "description": "Case closing comments",
+          "examples": [
+            "Order created",
+            "Order Converted to S4",
+            "Record Merged Successfully",
+            "Order approved to P20"
+          ]
+        },
+        {
+          "sfdc_field": "Description",
+          "udp_field": "description",
+          "lexical_search": true,
+          "vector_search": "Issue",
+          "response_field": false,
+          "description": "Detailed case description"
+        },
+        {
+          "sfdc_field": "Error_Codes__c",
+          "udp_field": "error_codes",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_field": false,
+          "description": "Technical error codes for filtering",
+          "examples": [
+            "218004",
+            "FTO-4D",
+            "cpStatusChanged-cpStatus-failed",
+            "iLO_200_PowerSupplyFailure",
+            "iLO_400_MemoryErrors",
+            "PEAK0189"
+          ]
+        },
+        {
+          "sfdc_field": "GSD_Environment_Plain_Text__c",
+          "udp_field": "gsd_environment_plain_text",
+          "lexical_search": true,
+          "vector_search": "Issue",
+          "response_field": false,
+          "description": "System environment details",
+          "examples": [
+            "Model: DL360 Gen9 OS: Windows",
+            "HPE 3PAR StoreServ A630 2-Node Base"
+          ]
+        },
+        {
+          "sfdc_field": "Id",
+          "udp_field": "id",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_field": true,
+          "description": "Salesforce identifier for the Case record"
+        },
+        {
+          "sfdc_field": "Issue_Plain_Text__c",
+          "udp_field": "issue_plain_text",
+          "lexical_search": true,
+          "vector_search": "Issue",
+          "response_field": false,
+          "description": "Technical issue description",
+          "examples": [
+            "Adapter 2 - HPE SN1200E 16Gb 2p FC HBA Status Degraded",
+            "Blade is unreachable iLO is accessible",
+            "CC: NSS0072024 Power Supply $ZZCIP.S100233.2 Hardware Error",
+            "DIMM and BIOS health degraded"
+          ]
+        },
+        {
+          "sfdc_field": "Issue_Type__c",
+          "udp_field": "issue_type",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_field": false,
+          "description": "Issue category classification",
+          "examples": [
+            "Help me/How to",
+            "HPESC Portal Issue",
+            "Non-DBD/Non-Technical agent bypass",
+            "Other",
+            "Product Non-functional/Not working as Expected",
+            "Part Order Logistics/Delivery/Administration"
+          ]
+        },
+        {
+          "sfdc_field": "ParentId",
+          "udp_field": "parentid",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_field": false,
+          "description": "Salesforce identifier for the Parent Case"
+        },
+        {
+          "sfdc_field": "Product_Line__c",
+          "udp_field": "product_line",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_field": false,
+          "description": "Product line code for filtering",
+          "examples": ["34", "35", "3S", "TI", "WB", "LA", "VL", "UY", "4A"]
+        },
+        {
+          "sfdc_field": "Product_Number__c",
+          "udp_field": "product_number",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_field": false,
+          "description": "Product SKU/part number",
+          "examples": [
+            "BB958A",
+            "HPEGLPLTSVCSPRE",
+            "OTHSTORZ",
+            "JW187A",
+            "867055-B21"
+          ]
+        },
+        {
+          "sfdc_field": "Product_Series__c",
+          "udp_field": "product_series",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_field": false,
+          "description": "Product series identifier",
+          "examples": ["1008995294", "5335825", "1013297748", "None"]
+        },
+        {
+          "sfdc_field": "Product_Hierarchy__c",
+          "udp_field": "product_hierarchy",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_field": false,
+          "description": "Salesforce identifier of the related Product Hierarchy"
+        },
+        {
+          "sfdc_field": "Resolution__c",
+          "udp_field": "resolution",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_field": false,
+          "description": "Resolution text (may contain HTML)",
+          "examples": [
+            "<p>DIMM replaced</p>",
+            "<p>Event triggered due to FOS upgrade activity.</p>",
+            "<p>Provided steps to update the server to latest version </p>"
+          ]
+        },
+        {
+          "sfdc_field": "Resolution_Code__c",
+          "udp_field": "resolution_code",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_field": false,
+          "description": "Resolution type classification",
+          "examples": [
+            "Electronic Case AutoClose",
+            "Customer self-solved without HPE assistance",
+            "IRS and 3Par STaTS False Alarm",
+            "Onsite Repair",
+            "Part Shipped"
+          ]
+        },
+        {
+          "sfdc_field": "Resolution_Plain_Text__c",
+          "udp_field": "resolution_plain_text",
+          "lexical_search": true,
+          "vector_search": "Resolution",
+          "response_field": false,
+          "description": "Clean resolution text for vectorization",
+          "examples": [
+            "Engineer visited the site and performed the given POA, as per RJIL team now server health is good and working fine.",
+            "Our records show that your HPE Primera bearing serial number CZ203607WZ has not phoned home to HPE within the last 4 hours."
+          ]
+        },
+        {
+          "sfdc_field": "Root_Cause__c",
+          "udp_field": "root_cause",
+          "lexical_search": true,
+          "vector_search": "Resolution",
+          "response_field": false,
+          "description": "Root cause category",
+          "examples": [
+            "CARE - Booking error",
+            "CARE - Care pack query",
+            "CARE - Info not available in OSV/VSA",
+            "OM Fallout - RB6",
+            "Missing products/ SP flag"
+          ]
+        },
+        {
+          "sfdc_field": "Subject",
+          "udp_field": "subject",
+          "lexical_search": true,
+          "vector_search": "Issue",
+          "response_field": false,
+          "description": "Case subject/title",
+          "examples": [
+            "[AW] Order Queries/Order Status Request/3531391765",
+            "[IMAU JOB:8102494] - OPE-0020490021",
+            "[No account] SimpliVity OmniCube physical capacity is dangerously low. Usage: 100% ."
+          ]
+        }
+      ]
+    },
+    "Task": {
+      "table_type": "Child",
+      "udp_table": "vw_de_sfdc_task_snapshot",
+      "description": "Troubleshooting and action plan tasks",
+      "field_count": 2,
+      "filter_criteria": "Type IN ('Plan of Action', 'Trouble Shooting')",
+      "note": "Only specific task types are included",
+      "fields": [
+        {
+          "sfdc_field": "Description",
+          "udp_field": "description",
+          "lexical_search": false,
+          "vector_search": "Resolution",
+          "response_field": false,
+          "description": "Troubleshooting steps and actions taken",
+          "examples": [
+            "Informed the customer that we will check with the extended diagnostics team for further investigation and provide an update.",
+            "Troubleshooting steps: MSA 2050-Falha em Disco Enc 1 Slot 5 Fault - Excessive Media Errors"
+          ]
+        },
+        {
+          "sfdc_field": "Subject",
+          "udp_field": "subject",
+          "lexical_search": false,
+          "vector_search": "Resolution",
+          "response_field": false,
+          "description": "Task subject/type",
+          "examples": [
+            "Plan of Action",
+            "Plan of Action - Onsite",
+            "Troubleshooting",
+            "Next follow up",
+            "L2 elevation - ASM involved hence elevating this now !"
+          ]
+        }
+      ]
+    },
+    "WorkOrder": {
+      "table_type": "Child",
+      "udp_table": "vw_de_sfdc_workorder_snapshot",
+      "description": "Field engineer work orders and onsite actions",
+      "field_count": 3,
+      "fields": [
+        {
+          "sfdc_field": "Closing_Summary__c",
+          "udp_field": "closing_summary",
+          "lexical_search": false,
+          "vector_search": "Resolution",
+          "response_field": false,
+          "description": "Work order closing summary from field engineer",
+          "examples": [
+            "Happycall/HW;YES;CSC;YES;YES;disk replacement",
+            "Visited site. Replaced faulty RAM in Proc2 Slot 12. Tested ok. Issue resolved."
+          ]
+        },
+        {
+          "sfdc_field": "Onsite_Action__c",
+          "udp_field": "onsite_action",
+          "lexical_search": false,
+          "vector_search": "Resolution",
+          "response_field": false,
+          "description": "Actions performed onsite by engineer",
+          "examples": [
+            "Check the case log and contact the customer collect the log. The log shows a 8TB hard disk has error count.",
+            "REVISIT PLAN OF ACTION - Steps performed on site: Traveling to Maryland for the install."
+          ]
+        },
+        {
+          "sfdc_field": "Problem_Description__c",
+          "udp_field": "problem_description",
+          "lexical_search": false,
+          "vector_search": "Resolution",
+          "response_field": false,
+          "description": "Work order problem description",
+          "examples": [
+            "Fault - Faulty RAM in Processor 2 Slot 12",
+            "HPE ProLiant BL460c Gen8 Server-VHO7FUL02BL04ESX16 (NJEQ119031) - Controller has a status of failed.",
+            "HPE Special Delivery Request/Equipment - fan board failures"
+          ]
+        }
+      ]
+    },
+    "CaseComments": {
+      "table_type": "Child",
+      "udp_table": "vw_de_sfdc_casecomment_snapshot",
+      "description": "Engineer comments and case discussion",
+      "field_count": 1,
+      "fields": [
+        {
+          "sfdc_field": "CommentBody",
+          "udp_field": "commentbody",
+          "lexical_search": true,
+          "vector_search": "Issue & Resolution",
+          "response_field": false,
+          "description": "Engineer comments on case",
+          "note": "Used for BOTH Issue and Resolution vectors",
+          "examples": [
+            "The quote NQ09405645 is now Orderable and ready to work.",
+            "10/14/25 - Order converted in Workspace- OP",
+            "Convert to Order in NGQC application is successfully done."
+          ]
+        }
+      ]
+    },
+    "WorkOrderFeed": {
+      "table_type": "Child (FeedItem)",
+      "udp_table": "TBD",
+      "description": "Feed updates related to work orders",
+      "field_count": 2,
+      "status": "TBD - UDP table mapping not confirmed",
+      "fields": [
+        {
+          "sfdc_field": "Title",
+          "udp_field": "TBD",
+          "lexical_search": false,
+          "vector_search": "Resolution",
+          "response_field": false,
+          "description": "Feed item title",
+          "note": "Mostly null values",
+          "examples": ["urldefense.com", "support.hpe.com"]
+        },
+        {
+          "sfdc_field": "Body",
+          "udp_field": "TBD",
+          "lexical_search": false,
+          "vector_search": "Resolution",
+          "response_field": false,
+          "description": "Feed update body text",
+          "examples": [
+            "Partner Notes 20251009, CE: Zaid Issue: HPE ProLiant DL380p Gen8 ServerCache Module Status Degraded",
+            "Submitted an Onsite Work Order 01677232, the part is available P08356-001"
+          ]
+        }
+      ]
+    },
+    "EmailMessage": {
+      "table_type": "Child",
+      "udp_table": "In progress",
+      "description": "Email communications related to case",
+      "field_count": 2,
+      "status": "In progress - Implementation not complete",
+      "note": "Email attachments are OUT OF SCOPE for initial phase",
+      "fields": [
+        {
+          "sfdc_field": "Subject",
+          "udp_field": "In progress",
+          "lexical_search": false,
+          "vector_search": "Resolution",
+          "response_field": false,
+          "description": "Email subject line",
+          "examples": [
+            "RE: HPE Support Case 5392877906 [ ref:!00Dd00bUlK.!500Kh0fwcXA:ref ]",
+            "RE: AT&T Mexico-Normal-Case ID 5392812256-USPM not Running",
+            "Automatic process failed to apply FAN on SR 27352 (NQ)"
+          ]
+        },
+        {
+          "sfdc_field": "TextBody",
+          "udp_field": "In progress",
+          "lexical_search": false,
+          "vector_search": "Resolution",
+          "response_field": false,
+          "description": "Email body text content",
+          "examples": [
+            "Dear Customer, Thank you for choosing Hewlett Packard Enterprise. Your email response is linked to a case that has been closed."
+          ]
+        }
+      ]
+    }
+  },
+  "weaviate_schema": {
+    "description": "Final fields stored in Weaviate vector database",
+    "vector_fields": [
+      {
+        "field_name": "cleaned_issue_embeddings",
+        "field_type": "vector",
+        "dimensions": 3072,
+        "model": "ChatHPE text-embedding-3-large",
+        "usage": "Semantic search on issue/problem descriptions",
+        "source_fields": [
+          "Case.Cause_Plain_Text__c",
+          "Case.Description",
+          "Case.GSD_Environment_Plain_Text__c",
+          "Case.Issue_Plain_Text__c",
+          "Case.Subject",
+          "CaseComments.CommentBody"
+        ]
+      },
+      {
+        "field_name": "cleaned_resolution_embeddings",
+        "field_type": "vector",
+        "dimensions": 3072,
+        "model": "ChatHPE text-embedding-3-large",
+        "usage": "Semantic search on solutions/resolutions",
+        "source_fields": [
+          "Case.Case_Resolution_Summary__c",
+          "Case.Resolution_Plain_Text__c",
+          "Case.Root_Cause__c",
+          "Task.Description",
+          "Task.Subject",
+          "WorkOrder.Closing_Summary__c",
+          "WorkOrder.Onsite_Action__c",
+          "WorkOrder.Problem_Description__c",
+          "CaseComments.CommentBody",
+          "WorkOrderFeed.Body",
+          "EmailMessage.Subject",
+          "EmailMessage.TextBody"
+        ]
+      }
+    ],
+    "text_fields": [
+      {
+        "field_name": "cleaned_issue_text",
+        "field_type": "text",
+        "usage": "Response field - human-readable issue text"
+      },
+      {
+        "field_name": "cleaned_resolution_text",
+        "field_type": "text",
+        "usage": "Response field - human-readable resolution text"
+      }
+    ],
+    "metadata_fields": [
+      {
+        "field_name": "case_number",
+        "field_type": "string",
+        "indexed": true,
+        "usage": "Response + Lexical Search"
+      },
+      {
+        "field_name": "case_id",
+        "field_type": "string",
+        "indexed": true,
+        "usage": "Response + Lexical Search"
+      },
+      {
+        "field_name": "error_codes",
+        "field_type": "string",
+        "indexed": true,
+        "usage": "Lexical Search - critical for error-based troubleshooting"
+      },
+      {
+        "field_name": "product_line",
+        "field_type": "string",
+        "indexed": true,
+        "usage": "Lexical Search - product filtering"
+      },
+      {
+        "field_name": "product_number",
+        "field_type": "string",
+        "indexed": true,
+        "usage": "Lexical Search - specific product filtering"
+      },
+      {
+        "field_name": "product_series",
+        "field_type": "string",
+        "indexed": true,
+        "usage": "Lexical Search"
+      },
+      {
+        "field_name": "product_hierarchy",
+        "field_type": "string",
+        "indexed": true,
+        "usage": "Lexical Search"
+      },
+      {
+        "field_name": "issue_type",
+        "field_type": "string",
+        "indexed": true,
+        "usage": "Lexical Search - issue categorization"
+      },
+      {
+        "field_name": "resolution_code",
+        "field_type": "string",
+        "indexed": true,
+        "usage": "Lexical Search - resolution type filtering"
+      },
+      {
+        "field_name": "parent_id",
+        "field_type": "string",
+        "indexed": true,
+        "usage": "Lexical Search - case hierarchy tracking"
+      }
+    ]
+  },
+  "summary": {
+    "total_source_fields": 31,
+    "case_table_fields": 20,
+    "task_table_fields": 2,
+    "workorder_table_fields": 3,
+    "casecomments_table_fields": 1,
+    "workorderfeed_table_fields": 2,
+    "emailmessage_table_fields": 2,
+    "fields_with_lexical_search": 21,
+    "fields_for_issue_vector": 7,
+    "fields_for_resolution_vector": 12,
+    "response_fields": 2
+  },
+  "implementation_notes": [
+    "Separate Issue and Resolution vectors (NOT single composite vector as in planning docs)",
+    "Email attachments are OUT OF SCOPE for phase 1",
+    "Task table filtered to Type IN ('Plan of Action', 'Trouble Shooting')",
+    "EmailMessage and WorkOrderFeed UDP mappings are IN PROGRESS",
+    "CaseComments.CommentBody is used for BOTH Issue and Resolution vectors",
+    "PII must be removed before vectorization: addresses, serial numbers, IPs, customer names, personal emails",
+    "HTML tags must be stripped from Resolution__c field",
+    "All Lexical Search fields will be available for hybrid search metadata filtering"
+  ]
+}

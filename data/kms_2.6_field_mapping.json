@@ -1,0 +1,148 @@
+{
+  "kms_2.6_spec": {
+    "total_tables": 6,
+    "total_fields": 44,
+    "vector_strategy": "single_composite",
+    "embedding_model": "ChatHPE text-embedding-3-large",
+    "dimensions": 3072
+  },
+  "tables": {
+    "Case": {
+      "field_count": 21,
+      "fields": [
+        "CaseNumber",
+        "Id",
+        "AccountId",
+        "Status",
+        "Priority",
+        "Product__c",
+        "Category__c",
+        "CreatedDate",
+        "ClosedDate",
+        "Subject",
+        "Description",
+        "Resolution__c",
+        "Error_Codes__c",
+        "Issue_Plain_Text__c",
+        "Cause_Plain_Text__c",
+        "GSD_Environment_Plain_Text__c",
+        "Resolution_Code__c",
+        "Resolution_Plain_Text__c",
+        "Product_Type__c",
+        "Product_Line__c",
+        "Root_Cause__c"
+      ]
+    },
+    "Task": {
+      "field_count": 2,
+      "fields": [
+        "Type",
+        "Description"
+      ],
+      "filter": "Type IN ('Plan of Action', 'Trouble Shooting')"
+    },
+    "WorkOrder": {
+      "field_count": 3,
+      "fields": [
+        "WorkOrderNumber",
+        "Subject",
+        "Description"
+      ]
+    },
+    "CaseComments": {
+      "field_count": 1,
+      "fields": [
+        "CommentBody"
+      ]
+    },
+    "WorkOrderFeed": {
+      "field_count": 2,
+      "fields": [
+        "Type",
+        "Body"
+      ],
+      "description": "Feed updates and service notes from work order actions"
+    },
+    "EmailMessage": {
+      "field_count": 2,
+      "fields": [
+        "Subject",
+        "TextBody"
+      ],
+      "description": "Email correspondence related to the case"
+    }
+  },
+  "sample_data": {
+    "test_case_1": {
+      "name": "DIMM Failure Hardware Issue",
+      "Case": {
+        "CaseNumber": "5000123456",
+        "Id": "500Kh0001ABC123",
+        "AccountId": "001Kh0001XYZ789",
+        "Status": "Closed",
+        "Priority": "High",
+        "Product__c": "ProLiant",
+        "Category__c": "Hardware > Server > Memory",
+        "CreatedDate": "2024-10-15T10:30:00.000Z",
+        "ClosedDate": "2024-10-16T14:45:00.000Z",
+        "Subject": "[Critical] HPE ProLiant DL380 Gen10 - Memory Health Degraded",
+        "Description": "Server experiencing memory errors and system instability due to faulty DIMM module in Processor 1 Slot 8. iLO showing repeated memory errors and health status degraded.",
+        "Resolution__c": "<p>Engineer visited site and replaced faulty DIMM module. System tested and confirmed stable.</p>",
+        "Error_Codes__c": "iLO_400_MemoryErrors",
+        "Issue_Plain_Text__c": "DIMM and BIOS health degraded",
+        "Cause_Plain_Text__c": "Hardware failure - Defective DIMM",
+        "GSD_Environment_Plain_Text__c": "Model: DL380 Gen10, OS: VMware ESXi 7.0, RAM: 128GB",
+        "Resolution_Code__c": "Onsite Repair",
+        "Resolution_Plain_Text__c": "Engineer visited the site and replaced the faulty DIMM module in Processor 1 Slot 8. System tested and confirmed working fine after replacement.",
+        "Product_Type__c": "Product Non-functional/Not working as Expected",
+        "Product_Line__c": "34",
+        "Root_Cause__c": "Defective hardware component - DIMM module"
+      },
+      "Task": [
+        {
+          "Type": "Plan of Action",
+          "Description": "Issue description: Server Memory Health Degraded. Part needed: Yes - Part Number 815098-B21 (16GB DDR4 DIMM). Schedule onsite visit for replacement."
+        },
+        {
+          "Type": "Trouble Shooting",
+          "Description": "Verified memory errors in iLO logs. Ran memory diagnostics confirming Processor 1 Slot 8 failure. Part ordered for replacement."
+        }
+      ],
+      "WorkOrder": [
+        {
+          "WorkOrderNumber": "WO-2024-10-123456",
+          "Subject": "DIMM Replacement - DL380 Gen10",
+          "Description": "Replace faulty DIMM in Processor 1 Slot 8. Part: 815098-B21. Onsite work completed. System tested OK."
+        }
+      ],
+      "CaseComments": [
+        {
+          "CommentBody": "Engineer confirmed on site. Working on DIMM replacement. Replaced faulty module and running diagnostics."
+        },
+        {
+          "CommentBody": "Replacement complete. System running stable. Memory tests passed. Customer confirmed satisfaction."
+        }
+      ],
+      "WorkOrderFeed": [
+        {
+          "Type": "CallUpdate",
+          "Body": "Engineer dispatched to customer site. ETA 2 hours."
+        },
+        {
+          "Type": "ServiceNote",
+          "Body": "Onsite work completed. DIMM replaced. System health restored. Parts used: 815098-B21 x1."
+        }
+      ],
+      "EmailMessage": [
+        {
+          "Subject": "Re: Memory Error - DL380 Gen10",
+          "TextBody": "Thank you for reporting. We have scheduled an engineer for tomorrow morning to replace the faulty DIMM module. You will receive confirmation once completed."
+        },
+        {
+          "Subject": "Case Resolved - Memory Issue Fixed",
+          "TextBody": "Your case has been resolved. The faulty DIMM module was replaced and the system is now operating normally. Please let us know if you experience any further issues."
+        }
+      ]
+    }
+  }
+}

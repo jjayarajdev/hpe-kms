@@ -1,0 +1,12 @@
+
+# SFDC JSON Exports
+data/raw/sfdc_exports/*.json
+data/raw/sfdc_exports/archive/**/*.json
+
+# Processed data
+data/processed/**/*.parquet
+data/processed/**/*.csv
+
+# Embeddings
+data/embeddings/**/*.npy
+data/embeddings/**/*.pkl

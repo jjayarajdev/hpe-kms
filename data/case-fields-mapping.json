@@ -1,0 +1,1587 @@
+{
+  "test_dataset_1": {
+    "dataset_name": "DIMM Failure Hardware Issue",
+    "data_mapping": {
+      "sources": [
+        {
+          "source_table": "Case",
+          "source_field": "Case_Resolution_Summary__c",
+          "lexical_search": true,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "case_resolution_summary",
+          "comment_example": "Engineer visited the site and replaced the faulty DIMM module in Processor 1 Slot 8. System tested and confirmed working fine after replacement."
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Case Number",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "casenumber",
+          "comment_example": "5000123456"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Cause_Plain_Text__c",
+          "lexical_search": true,
+          "vector_search": true,
+          "response_type": "Issue",
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "cause_plain_text",
+          "comment_example": "DIMM failure"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Close_Comments__c",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "close_comments",
+          "comment_example": "Part replaced successfully. Customer confirmed system stable."
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Description",
+          "lexical_search": true,
+          "vector_search": true,
+          "response_type": "Issue",
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "description",
+          "comment_example": "Server experiencing memory errors and system instability due to faulty DIMM module in Processor 1 Slot 8"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Error_Codes__c",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "error_codes",
+          "comment_example": "iLO_400_MemoryErrors"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "GSD_Environment_Plain_Text__c",
+          "lexical_search": true,
+          "vector_search": true,
+          "response_type": "Issue",
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "gsd_environment_plain_text",
+          "comment_example": "Model: DL380 Gen10 OS: VMware ESXi 7.0"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Id",
+          "lexical_search": true,
+          "vector_search": true,
+          "response_type": "Response",
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "id",
+          "comment_example": "500Kh0001ABC123"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Issue_Plain_Text__c",
+          "lexical_search": true,
+          "vector_search": true,
+          "response_type": "Issue",
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "issue_plain_text",
+          "comment_example": "DIMM and BIOS health degraded"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Issue_Type__c",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "issue_type",
+          "comment_example": "Product Non-functional/Not working as Expected"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "ParentId",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "parentid",
+          "comment_example": null
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Product_Line__c",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "product_line",
+          "comment_example": "34"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Product_Number__c",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": null,
+          "udp_field": "product_number",
+          "comment_example": "815098-B21"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Product_Series__c",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": null,
+          "udp_field": "product_series",
+          "comment_example": "1008995294"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Product_Hierarchy__c",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "product_hierarchy",
+          "comment_example": "01t4M000000ABC123"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Resolution__c",
+          "lexical_search": true,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "resolution",
+          "comment_example": "<p>DIMM replaced</p>"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Resolution_Code__c",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "resolution_code",
+          "comment_example": "Onsite Repair"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Resolution_Plain_Text__c",
+          "lexical_search": true,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "resolution_plain_text",
+          "comment_example": "Engineer visited the site and replaced the faulty DIMM module in Processor 1 Slot 8. System tested and confirmed working fine."
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Root_Cause__c",
+          "lexical_search": true,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "root_cause",
+          "comment_example": "Hardware failure - Defective DIMM"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Subject",
+          "lexical_search": true,
+          "vector_search": true,
+          "response_type": "Issue",
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "subject",
+          "comment_example": "[Critical] HPE ProLiant DL380 Gen10 - Memory Health Degraded"
+        },
+        {
+          "source_table": "Task",
+          "source_field": "Type",
+          "lexical_search": false,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": "vw_de_sfdc_task_snapshot",
+          "udp_field": "task",
+          "comment_example": "Plan of Action"
+        },
+        {
+          "source_table": "Task",
+          "source_field": "Description",
+          "lexical_search": false,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "vw_de_sfdc_task_snapshot",
+          "udp_field": "description",
+          "comment_example": "Issue description: Server Memory Health Degraded\nAction Plan: Need to Replace the DIMM\nPart needed: Yes\n- Part Number - 815098-B21\n- Part Description - 32GB DDR4-2666 Memory Module\nCustomer wishes CSR for: Yes"
+        },
+        {
+          "source_table": "Task",
+          "source_field": "Subject",
+          "lexical_search": false,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "vw_de_sfdc_task_snapshot",
+          "udp_field": "subject",
+          "comment_example": "Plan of Action - Onsite"
+        },
+        {
+          "source_table": "WorkOrder",
+          "source_field": "Closing_Summary__c",
+          "lexical_search": false,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "vw_de_sfdc_workorder_snapshot",
+          "udp_field": "closing_summary",
+          "comment_example": "Happycall/HW;YES;CSC;YES;YES;DIMM replacement"
+        },
+        {
+          "source_table": "WorkOrder",
+          "source_field": "Onsite_Action__c",
+          "lexical_search": false,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "vw_de_sfdc_workorder_snapshot",
+          "udp_field": "onsite_action",
+          "comment_example": "Visited customer site. Identified faulty DIMM in Proc1 Slot 8 using iLO diagnostics. Replaced DIMM module part# 815098-B21. Ran memory diagnostics - all tests passed. Server health verified as good."
+        },
+        {
+          "source_table": "WorkOrder",
+          "source_field": "Problem_Description__c",
+          "lexical_search": false,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "vw_de_sfdc_workorder_snapshot",
+          "udp_field": "problem_description",
+          "comment_example": "Fault - Faulty DIMM in Processor 1 Slot 8"
+        },
+        {
+          "source_table": "CaseComments",
+          "source_field": "CommentBody",
+          "lexical_search": false,
+          "vector_search": true,
+          "response_type": "Issue & Resolution",
+          "udp_table": "vw_de_sfdc_casecomment_snapshot",
+          "udp_field": "commentbody",
+          "comment_example": "Engineer confirmed on site. Working on DIMM replacement. Replacement completed successfully. All diagnostics passed. Customer confirmed system stable."
+        },
+        {
+          "source_table": "WorkOrderFeed",
+          "source_field": "Title",
+          "lexical_search": false,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "TBD",
+          "udp_field": "TBD",
+          "comment_example": "support.hpe.com"
+        },
+        {
+          "source_table": "WorkOrderFeed",
+          "source_field": "Body",
+          "lexical_search": false,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "TBD",
+          "udp_field": "TBD",
+          "comment_example": "Partner Notes 20251009, CE: John Issue: HPE ProLiant DL380 Gen10 Server Memory Status Degraded Action: Replace DIMM, 815098-B21, SN New: SNEW123456, SN Old: SOLD789012"
+        },
+        {
+          "source_table": "EmailMessage",
+          "source_field": "Subject",
+          "lexical_search": false,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "In progress",
+          "udp_field": "In progress",
+          "comment_example": "RE: HPE Support Case 5000123456 [ ref:!00Dd00bUlK.!500Kh0fwcXA:ref ]"
+        },
+        {
+          "source_table": "EmailMessage",
+          "source_field": "TextBody",
+          "lexical_search": false,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "In progress",
+          "udp_field": "In progress",
+          "comment_example": "Dear Customer, Your case 5000123456 has been updated. Engineer has completed the DIMM replacement successfully. Please verify system stability and confirm if issue is resolved. Thank you for choosing Hewlett Packard Enterprise. Sincerely, HPE Support Team"
+        }
+      ]
+    }
+  },
+  "test_dataset_2": {
+    "dataset_name": "Storage Array Tape Drive Failure",
+    "data_mapping": {
+      "sources": [
+        {
+          "source_table": "Case",
+          "source_field": "Case_Resolution_Summary__c",
+          "lexical_search": true,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "case_resolution_summary",
+          "comment_example": "Replacement tape drive shipped and installed by customer. Drive recognized by library controller. Backup test completed successfully."
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Case Number",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "casenumber",
+          "comment_example": "5000234567"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Cause_Plain_Text__c",
+          "lexical_search": true,
+          "vector_search": true,
+          "response_type": "Issue",
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "cause_plain_text",
+          "comment_example": "4H - HPE StoreEver MSL6480 Tape Library - Tape drive broken"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Close_Comments__c",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "close_comments",
+          "comment_example": "Part shipped successfully. Customer installed. Backup operations resumed."
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Description",
+          "lexical_search": true,
+          "vector_search": true,
+          "response_type": "Issue",
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "description",
+          "comment_example": "Tape library experiencing drive failures affecting backup operations. Drive in slot 4 showing hardware errors."
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Error_Codes__c",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "error_codes",
+          "comment_example": "218004"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "GSD_Environment_Plain_Text__c",
+          "lexical_search": true,
+          "vector_search": true,
+          "response_type": "Issue",
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "gsd_environment_plain_text",
+          "comment_example": "HPE StoreEver MSL6480 Tape Library - 2 LTO-8 drives"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Id",
+          "lexical_search": true,
+          "vector_search": true,
+          "response_type": "Response",
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "id",
+          "comment_example": "500Kh0002DEF456"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Issue_Plain_Text__c",
+          "lexical_search": true,
+          "vector_search": true,
+          "response_type": "Issue",
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "issue_plain_text",
+          "comment_example": "Tape drive in slot 4 status failed - backup jobs failing"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Issue_Type__c",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "issue_type",
+          "comment_example": "Product Non-functional/Not working as Expected"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "ParentId",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "parentid",
+          "comment_example": null
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Product_Line__c",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "product_line",
+          "comment_example": "TI"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Product_Number__c",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": null,
+          "udp_field": "product_number",
+          "comment_example": "BH965A"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Product_Series__c",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": null,
+          "udp_field": "product_series",
+          "comment_example": "5335825"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Product_Hierarchy__c",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "product_hierarchy",
+          "comment_example": "01t4M000000DEF789"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Resolution__c",
+          "lexical_search": true,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "resolution",
+          "comment_example": "<p>Tape drive replaced successfully</p><p>Backup operations resumed</p>"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Resolution_Code__c",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "resolution_code",
+          "comment_example": "Part Shipped"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Resolution_Plain_Text__c",
+          "lexical_search": true,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "resolution_plain_text",
+          "comment_example": "Replacement tape drive shipped and installed by customer. Drive recognized by library controller. Backup test completed successfully."
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Root_Cause__c",
+          "lexical_search": true,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "root_cause",
+          "comment_example": "Hardware failure - Tape drive mechanical failure"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Subject",
+          "lexical_search": true,
+          "vector_search": true,
+          "response_type": "Issue",
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "subject",
+          "comment_example": "[High Priority] HPE StoreEver MSL6480 - Tape Drive Failure Slot 4"
+        },
+        {
+          "source_table": "Task",
+          "source_field": "Type",
+          "lexical_search": false,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": "vw_de_sfdc_task_snapshot",
+          "udp_field": "task",
+          "comment_example": "Trouble Shooting"
+        },
+        {
+          "source_table": "Task",
+          "source_field": "Description",
+          "lexical_search": false,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "vw_de_sfdc_task_snapshot",
+          "udp_field": "description",
+          "comment_example": "Troubleshooting steps:\nMSL6480 Tape Library - Drive Slot 4 Failed\nFault - Drive Mechanical Error\nModel Number: MSL6480\nSerial Number: BRSM123456\nDrive shows failed status in management console\nRecommendation: Replace tape drive"
+        },
+        {
+          "source_table": "Task",
+          "source_field": "Subject",
+          "lexical_search": false,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "vw_de_sfdc_task_snapshot",
+          "udp_field": "subject",
+          "comment_example": "Troubleshooting"
+        },
+        {
+          "source_table": "WorkOrder",
+          "source_field": "Closing_Summary__c",
+          "lexical_search": false,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "vw_de_sfdc_workorder_snapshot",
+          "udp_field": "closing_summary",
+          "comment_example": "Part shipped;Customer self-install;Backup operations restored"
+        },
+        {
+          "source_table": "WorkOrder",
+          "source_field": "Onsite_Action__c",
+          "lexical_search": false,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "vw_de_sfdc_workorder_snapshot",
+          "udp_field": "onsite_action",
+          "comment_example": "Advanced replacement drive shipped to customer. Customer technical team performed installation. Drive initialization successful."
+        },
+        {
+          "source_table": "WorkOrder",
+          "source_field": "Problem_Description__c",
+          "lexical_search": false,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "vw_de_sfdc_workorder_snapshot",
+          "udp_field": "problem_description",
+          "comment_example": "HPE StoreEver MSL6480 Tape Library - Tape drive in slot 4 hardware failure"
+        },
+        {
+          "source_table": "CaseComments",
+          "source_field": "CommentBody",
+          "lexical_search": false,
+          "vector_search": true,
+          "response_type": "Issue & Resolution",
+          "udp_table": "vw_de_sfdc_casecomment_snapshot",
+          "udp_field": "commentbody",
+          "comment_example": "Advanced replacement approved. Shipping tape drive part# BH965A. Customer received replacement drive. Installation in progress. Drive installed and initialized. Library recognizes new drive. Test backup job successful."
+        },
+        {
+          "source_table": "WorkOrderFeed",
+          "source_field": "Title",
+          "lexical_search": false,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "TBD",
+          "udp_field": "TBD",
+          "comment_example": "support.hpe.com"
+        },
+        {
+          "source_table": "WorkOrderFeed",
+          "source_field": "Body",
+          "lexical_search": false,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "TBD",
+          "udp_field": "TBD",
+          "comment_example": "Part shipped for self-install. Part Number: BH965A - LTO-8 Tape Drive. Customer confirmed receipt and successful installation."
+        },
+        {
+          "source_table": "EmailMessage",
+          "source_field": "Subject",
+          "lexical_search": false,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "In progress",
+          "udp_field": "In progress",
+          "comment_example": "RE: HPE Support Case 5000234567 - Tape Drive Replacement [ ref:!00Dd00bUlK.!500Kh0e51Uj:ref ]"
+        },
+        {
+          "source_table": "EmailMessage",
+          "source_field": "TextBody",
+          "lexical_search": false,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "In progress",
+          "udp_field": "In progress",
+          "comment_example": "Dear Customer, Your replacement LTO-8 tape drive has been shipped via express delivery. Tracking number: XYZ789456. Expected delivery tomorrow. Installation guide attached. Please confirm once installed and tested. Regards, HPE Support"
+        }
+      ]
+    }
+  },
+  "test_dataset_3": {
+    "dataset_name": "HDD Failure with Storage Degradation",
+    "data_mapping": {
+      "sources": [
+        {
+          "source_table": "Case",
+          "source_field": "Case_Resolution_Summary__c",
+          "lexical_search": true,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "case_resolution_summary",
+          "comment_example": "Engineer visited site and replaced the failing hard drive. RAID array rebuild initiated and completed successfully. Array status now optimal."
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Case Number",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "casenumber",
+          "comment_example": "5000345678"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Cause_Plain_Text__c",
+          "lexical_search": true,
+          "vector_search": true,
+          "response_type": "Issue",
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "cause_plain_text",
+          "comment_example": "HDD failure"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Close_Comments__c",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "close_comments",
+          "comment_example": "Order Converted to S4. Part replaced. RAID rebuild completed."
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Description",
+          "lexical_search": true,
+          "vector_search": true,
+          "response_type": "Issue",
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "description",
+          "comment_example": "Server showing storage controller warnings. One of the hard drives in RAID array showing excessive media errors and predicted failure."
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Error_Codes__c",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "error_codes",
+          "comment_example": "FTO-4D"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "GSD_Environment_Plain_Text__c",
+          "lexical_search": true,
+          "vector_search": true,
+          "response_type": "Issue",
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "gsd_environment_plain_text",
+          "comment_example": "Model: DL360 Gen9 OS: Windows Server 2019"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Id",
+          "lexical_search": true,
+          "vector_search": true,
+          "response_type": "Response",
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "id",
+          "comment_example": "500Kh0003GHI789"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Issue_Plain_Text__c",
+          "lexical_search": true,
+          "vector_search": true,
+          "response_type": "Issue",
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "issue_plain_text",
+          "comment_example": "Hard drive showing predictive failure warning - SMART errors detected"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Issue_Type__c",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "issue_type",
+          "comment_example": "Product Non-functional/Not working as Expected"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "ParentId",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "parentid",
+          "comment_example": null
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Product_Line__c",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "product_line",
+          "comment_example": "35"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Product_Number__c",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": null,
+          "udp_field": "product_number",
+          "comment_example": "872479-B21"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Product_Series__c",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": null,
+          "udp_field": "product_series",
+          "comment_example": "1013297748"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Product_Hierarchy__c",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "product_hierarchy",
+          "comment_example": "01t4M000000GHI012"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Resolution__c",
+          "lexical_search": true,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "resolution",
+          "comment_example": "<p>Defective HDD replaced</p><p>RAID rebuild completed successfully</p>"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Resolution_Code__c",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "resolution_code",
+          "comment_example": "Onsite Repair"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Resolution_Plain_Text__c",
+          "lexical_search": true,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "resolution_plain_text",
+          "comment_example": "Engineer visited site and replaced the failing hard drive. RAID array rebuild initiated and completed successfully. Array status now optimal."
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Root_Cause__c",
+          "lexical_search": true,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "root_cause",
+          "comment_example": "Hardware failure - Hard drive media errors"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Subject",
+          "lexical_search": true,
+          "vector_search": true,
+          "response_type": "Issue",
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "subject",
+          "comment_example": "[Urgent] DL360 Gen9 - Hard Drive Predictive Failure Alert"
+        },
+        {
+          "source_table": "Task",
+          "source_field": "Type",
+          "lexical_search": false,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": "vw_de_sfdc_task_snapshot",
+          "udp_field": "task",
+          "comment_example": "Plan of Action"
+        },
+        {
+          "source_table": "Task",
+          "source_field": "Description",
+          "lexical_search": false,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "vw_de_sfdc_task_snapshot",
+          "udp_field": "description",
+          "comment_example": "Issue description: Hard Drive Predictive Failure\nAction Plan: Replace failing HDD before complete failure\nPart needed: Yes\n- Part Number - 872479-B21\n- Part Description - 1TB SATA 7.2K LFF HDD\nCustomer wishes CSR for: No\nRAID rebuild will be required post replacement"
+        },
+        {
+          "source_table": "Task",
+          "source_field": "Subject",
+          "lexical_search": false,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "vw_de_sfdc_task_snapshot",
+          "udp_field": "subject",
+          "comment_example": "Plan of Action - Onsite"
+        },
+        {
+          "source_table": "WorkOrder",
+          "source_field": "Closing_Summary__c",
+          "lexical_search": false,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "vw_de_sfdc_workorder_snapshot",
+          "udp_field": "closing_summary",
+          "comment_example": "Happycall/HW;YES;CSC;YES;YES;disk replacement"
+        },
+        {
+          "source_table": "WorkOrder",
+          "source_field": "Onsite_Action__c",
+          "lexical_search": false,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "vw_de_sfdc_workorder_snapshot",
+          "udp_field": "onsite_action",
+          "comment_example": "Check the case log and contact the customer collect the log. The log shows a 1TB hard disk has error count. AHS log analyzed to identify the location of the failed disk in bay 3. Replaced disk and initiated RAID rebuild. Rebuild completed in 4 hours. Array status verified as optimal."
+        },
+        {
+          "source_table": "WorkOrder",
+          "source_field": "Problem_Description__c",
+          "lexical_search": false,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "vw_de_sfdc_workorder_snapshot",
+          "udp_field": "problem_description",
+          "comment_example": "Fault - Hard drive predictive failure in bay 3"
+        },
+        {
+          "source_table": "CaseComments",
+          "source_field": "CommentBody",
+          "lexical_search": false,
+          "vector_search": true,
+          "response_type": "Issue & Resolution",
+          "udp_table": "vw_de_sfdc_casecomment_snapshot",
+          "udp_field": "commentbody",
+          "comment_example": "iLO logs show SMART errors on drive in bay 3 for the past week. AHS logs uploaded and analyzed. Drive showing high error count. Part 872479-B21 available in local depot. Engineer dispatch scheduled. Engineer on site. Drive replacement in progress. Drive replaced. RAID rebuild at 50% completion. RAID rebuild completed. Array status optimal. Customer confirmed no issues."
+        },
+        {
+          "source_table": "WorkOrderFeed",
+          "source_field": "Title",
+          "lexical_search": false,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "TBD",
+          "udp_field": "TBD",
+          "comment_example": null
+        },
+        {
+          "source_table": "WorkOrderFeed",
+          "source_field": "Body",
+          "lexical_search": false,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "TBD",
+          "udp_field": "TBD",
+          "comment_example": "Partner Notes 20251010, CE: Mike Issue: HPE ProLiant DL360 Gen9 Server HDD Predictive Failure Action: Replace HDD, 872479-B21, SN New: S4567890, SN Old: S1234567, RAID rebuild initiated"
+        },
+        {
+          "source_table": "EmailMessage",
+          "source_field": "Subject",
+          "lexical_search": false,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "In progress",
+          "udp_field": "In progress",
+          "comment_example": "RE: HPE Support Case 5000345678 - HDD Failure [ ref:!00Dd00bUlK.!500Kh0fABCD:ref ]"
+        },
+        {
+          "source_table": "EmailMessage",
+          "source_field": "TextBody",
+          "lexical_search": false,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "In progress",
+          "udp_field": "In progress",
+          "comment_example": "Dear Customer, Your HDD replacement has been completed. RAID rebuild is in progress and currently at 75% completion. Expected completion in 1 hour. We will monitor the rebuild process. Please do not power off the server during rebuild. Regards, HPE Support"
+        }
+      ]
+    }
+  },
+  "test_dataset_4": {
+    "dataset_name": "3PAR Storage False Alarm",
+    "data_mapping": {
+      "sources": [
+        {
+          "source_table": "Case",
+          "source_field": "Case_Resolution_Summary__c",
+          "lexical_search": true,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "case_resolution_summary",
+          "comment_example": "Customer implemented certain planned changes as part of activity CHG0169095, which triggered the related alerts. After the completion of the planned activity, the storage state returned to normal."
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Case Number",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "casenumber",
+          "comment_example": "5000456789"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Cause_Plain_Text__c",
+          "lexical_search": true,
+          "vector_search": true,
+          "response_type": "Issue",
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "cause_plain_text",
+          "comment_example": "Storage Degradation"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Close_Comments__c",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "close_comments",
+          "comment_example": "Record Merged Successfully. False alarm confirmed. Case closed."
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Description",
+          "lexical_search": true,
+          "vector_search": true,
+          "response_type": "Issue",
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "description",
+          "comment_example": "HPE 3PAR StoreServ system triggered automated alert for potential storage degradation. Investigation required to determine if actual issue exists."
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Error_Codes__c",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "error_codes",
+          "comment_example": "PEAK0189"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "GSD_Environment_Plain_Text__c",
+          "lexical_search": true,
+          "vector_search": true,
+          "response_type": "Issue",
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "gsd_environment_plain_text",
+          "comment_example": "HPE 3PAR StoreServ A630 2-Node Base"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Id",
+          "lexical_search": true,
+          "vector_search": true,
+          "response_type": "Response",
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "id",
+          "comment_example": "500Kh0004JKL345"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Issue_Plain_Text__c",
+          "lexical_search": true,
+          "vector_search": true,
+          "response_type": "Issue",
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "issue_plain_text",
+          "comment_example": "3PAR StoreServ - Storage capacity threshold warning triggered"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Issue_Type__c",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "issue_type",
+          "comment_example": "Other"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "ParentId",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "parentid",
+          "comment_example": null
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Product_Line__c",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "product_line",
+          "comment_example": "3S"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Product_Number__c",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": null,
+          "udp_field": "product_number",
+          "comment_example": "OTHSTORZ"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Product_Series__c",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": null,
+          "udp_field": "product_series",
+          "comment_example": "None"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Product_Hierarchy__c",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "product_hierarchy",
+          "comment_example": "01t4M000000JKL678"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Resolution__c",
+          "lexical_search": true,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "resolution",
+          "comment_example": "<p><br></p><p>Event triggered due to scheduled maintenance activity.</p>"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Resolution_Code__c",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "resolution_code",
+          "comment_example": "IRS and 3Par STaTS False Alarm"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Resolution_Plain_Text__c",
+          "lexical_search": true,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "resolution_plain_text",
+          "comment_example": "Customer implemented certain planned changes as part of activity CHG0169095, which triggered the related alerts. After the completion of the planned activity, the storage state returned to normal. Customer confirmed that the issue is resolved and requested to close the case."
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Root_Cause__c",
+          "lexical_search": true,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "root_cause",
+          "comment_example": "False alarm - Planned maintenance activity"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Subject",
+          "lexical_search": true,
+          "vector_search": true,
+          "response_type": "Issue",
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "subject",
+          "comment_example": "[Auto Alert] HPE 3PAR StoreServ A630 - Storage Threshold Warning"
+        },
+        {
+          "source_table": "Task",
+          "source_field": "Type",
+          "lexical_search": false,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": "vw_de_sfdc_task_snapshot",
+          "udp_field": "task",
+          "comment_example": "Trouble Shooting"
+        },
+        {
+          "source_table": "Task",
+          "source_field": "Description",
+          "lexical_search": false,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "vw_de_sfdc_task_snapshot",
+          "udp_field": "description",
+          "comment_example": "Informed the customer that we will check with the extended diagnostics team for further investigation and provide an update. Customer mentioned planned maintenance was in progress."
+        },
+        {
+          "source_table": "Task",
+          "source_field": "Subject",
+          "lexical_search": false,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "vw_de_sfdc_task_snapshot",
+          "udp_field": "subject",
+          "comment_example": "Troubleshooting"
+        },
+        {
+          "source_table": "WorkOrder",
+          "source_field": "Closing_Summary__c",
+          "lexical_search": false,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "vw_de_sfdc_workorder_snapshot",
+          "udp_field": "closing_summary",
+          "comment_example": "False alarm;Planned maintenance;No action required"
+        },
+        {
+          "source_table": "WorkOrder",
+          "source_field": "Onsite_Action__c",
+          "lexical_search": false,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "vw_de_sfdc_workorder_snapshot",
+          "udp_field": "onsite_action",
+          "comment_example": "Remote investigation completed. Confirmed alert triggered during planned maintenance window CHG0169095. Storage system operating normally post-maintenance."
+        },
+        {
+          "source_table": "WorkOrder",
+          "source_field": "Problem_Description__c",
+          "lexical_search": false,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "vw_de_sfdc_workorder_snapshot",
+          "udp_field": "problem_description",
+          "comment_example": "HPE 3PAR StoreServ A630 - False alarm during maintenance"
+        },
+        {
+          "source_table": "CaseComments",
+          "source_field": "CommentBody",
+          "lexical_search": false,
+          "vector_search": true,
+          "response_type": "Issue & Resolution",
+          "udp_table": "vw_de_sfdc_casecomment_snapshot",
+          "udp_field": "commentbody",
+          "comment_example": "Auto-generated alert received from 3PAR system at 02:15 AM. Customer contacted - confirmed planned maintenance was scheduled for 02:00-04:00 AM window. Storage logs reviewed. Alert coincides with maintenance activity CHG0169095. Post-maintenance verification shows all storage metrics within normal parameters. Customer confirmed system operating normally. Requested case closure."
+        },
+        {
+          "source_table": "WorkOrderFeed",
+          "source_field": "Title",
+          "lexical_search": false,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "TBD",
+          "udp_field": "TBD",
+          "comment_example": "urldefense.com"
+        },
+        {
+          "source_table": "WorkOrderFeed",
+          "source_field": "Body",
+          "lexical_search": false,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "TBD",
+          "udp_field": "TBD",
+          "comment_example": "Remote monitoring alert - False positive identified. Maintenance window CHG0169095 confirmed. No actual storage issue present. System health verified as optimal post-maintenance."
+        },
+        {
+          "source_table": "EmailMessage",
+          "source_field": "Subject",
+          "lexical_search": false,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "In progress",
+          "udp_field": "In progress",
+          "comment_example": "RE: HPE Support Case 5000456789 - 3PAR Alert [ ref:!00Dd00bUlK.!500Kh0fEFGH:ref ]"
+        },
+        {
+          "source_table": "EmailMessage",
+          "source_field": "TextBody",
+          "lexical_search": false,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "In progress",
+          "udp_field": "In progress",
+          "comment_example": "Dear Customer, We have completed investigation of the 3PAR alert. The alert was triggered during your planned maintenance window CHG0169095. All storage metrics are now within normal parameters. This was a false alarm. No further action required. Case will be closed. Regards, HPE Support"
+        }
+      ]
+    }
+  },
+  "test_dataset_5": {
+    "dataset_name": "Order Processing Query",
+    "data_mapping": {
+      "sources": [
+        {
+          "source_table": "Case",
+          "source_field": "Case_Resolution_Summary__c",
+          "lexical_search": true,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "case_resolution_summary",
+          "comment_example": "Order 3531391765 reviewed and approved. Processing expedited due to customer deployment timeline. Shipment scheduled for next business day delivery."
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Case Number",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "casenumber",
+          "comment_example": "5000567890"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Cause_Plain_Text__c",
+          "lexical_search": true,
+          "vector_search": true,
+          "response_type": "Issue",
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "cause_plain_text",
+          "comment_example": "CARE - Booking error"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Close_Comments__c",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "close_comments",
+          "comment_example": "Order approved to P20. The sales credit for the eligible transactions has been applied in Sales Compensation Systems as an exception in accordance with the Global Sales Compensation Delegation of Authority Policy. Section 6.2.1. Please allow time for updates to be visible in MyComp Reporting."
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Description",
+          "lexical_search": true,
+          "vector_search": true,
+          "response_type": "Issue",
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "description",
+          "comment_example": "Customer inquiring about order status and requesting expedited processing for critical data center deployment."
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Error_Codes__c",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "error_codes",
+          "comment_example": null
+        },
+        {
+          "source_table": "Case",
+          "source_field": "GSD_Environment_Plain_Text__c",
+          "lexical_search": true,
+          "vector_search": true,
+          "response_type": "Issue",
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "gsd_environment_plain_text",
+          "comment_example": "[PART ONLY]//CLFP//CZ34278RY2//Dispatch Code ASAP//456096-001//NOIDA AG3//FE Not Required"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Id",
+          "lexical_search": true,
+          "vector_search": true,
+          "response_type": "Response",
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "id",
+          "comment_example": "500Kh0005MNO901"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Issue_Plain_Text__c",
+          "lexical_search": true,
+          "vector_search": true,
+          "response_type": "Issue",
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "issue_plain_text",
+          "comment_example": "Order processing delay - deployment timeline at risk"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Issue_Type__c",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "issue_type",
+          "comment_example": "Part Order Logistics/Delivery/Administration"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "ParentId",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "parentid",
+          "comment_example": null
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Product_Line__c",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "product_line",
+          "comment_example": "WB"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Product_Number__c",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": null,
+          "udp_field": "product_number",
+          "comment_example": "HPEGLPLTSVCSPRE"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Product_Series__c",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": null,
+          "udp_field": "product_series",
+          "comment_example": "None"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Product_Hierarchy__c",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "product_hierarchy",
+          "comment_example": "01t4M000000MNO234"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Resolution__c",
+          "lexical_search": true,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "resolution",
+          "comment_example": "<p>Order approved to P20</p><p>Shipment scheduled</p>"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Resolution_Code__c",
+          "lexical_search": true,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "resolution_code",
+          "comment_example": "Electronic Case AutoClose"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Resolution_Plain_Text__c",
+          "lexical_search": true,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "resolution_plain_text",
+          "comment_example": "Order 3531391765 reviewed and approved. Processing expedited due to customer deployment timeline. Shipment scheduled for next business day delivery."
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Root_Cause__c",
+          "lexical_search": true,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "root_cause",
+          "comment_example": "CARE - Booking error"
+        },
+        {
+          "source_table": "Case",
+          "source_field": "Subject",
+          "lexical_search": true,
+          "vector_search": true,
+          "response_type": "Issue",
+          "udp_table": "vw_de_sfdc_case_snapshot",
+          "udp_field": "subject",
+          "comment_example": "[AW] Order Queries/Order Status Request/3531391765"
+        },
+        {
+          "source_table": "Task",
+          "source_field": "Type",
+          "lexical_search": false,
+          "vector_search": false,
+          "response_type": null,
+          "udp_table": "vw_de_sfdc_task_snapshot",
+          "udp_field": "task",
+          "comment_example": "Plan of Action"
+        },
+        {
+          "source_table": "Task",
+          "source_field": "Description",
+          "lexical_search": false,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "vw_de_sfdc_task_snapshot",
+          "udp_field": "description",
+          "comment_example": "Order status update:\nOrder Number: 3531391765\nStatus: In review\nAction: Escalating to order management for expedited processing\nCustomer requires delivery by end of week for data center deployment"
+        },
+        {
+          "source_table": "Task",
+          "source_field": "Subject",
+          "lexical_search": false,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "vw_de_sfdc_task_snapshot",
+          "udp_field": "subject",
+          "comment_example": "Next follow up"
+        },
+        {
+          "source_table": "WorkOrder",
+          "source_field": "Closing_Summary__c",
+          "lexical_search": false,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "vw_de_sfdc_workorder_snapshot",
+          "udp_field": "closing_summary",
+          "comment_example": null
+        },
+        {
+          "source_table": "WorkOrder",
+          "source_field": "Onsite_Action__c",
+          "lexical_search": false,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "vw_de_sfdc_workorder_snapshot",
+          "udp_field": "onsite_action",
+          "comment_example": null
+        },
+        {
+          "source_table": "WorkOrder",
+          "source_field": "Problem_Description__c",
+          "lexical_search": false,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "vw_de_sfdc_workorder_snapshot",
+          "udp_field": "problem_description",
+          "comment_example": null
+        },
+        {
+          "source_table": "CaseComments",
+          "source_field": "CommentBody",
+          "lexical_search": false,
+          "vector_search": true,
+          "response_type": "Issue & Resolution",
+          "udp_table": "vw_de_sfdc_casecomment_snapshot",
+          "udp_field": "commentbody",
+          "comment_example": "The quote NQ09405645 is now Orderable and ready to work. 10/14/25 - Order converted in Workspace- OP. Convert to Order in NGQC application is successfully done. Order 3531391765 in review status. Customer requesting expedited processing. Escalated to order management team for priority processing review. Order approved. Moving to P20 status for shipment preparation."
+        },
+        {
+          "source_table": "WorkOrderFeed",
+          "source_field": "Title",
+          "lexical_search": false,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "TBD",
+          "udp_field": "TBD",
+          "comment_example": null
+        },
+        {
+          "source_table": "WorkOrderFeed",
+          "source_field": "Body",
+          "lexical_search": false,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "TBD",
+          "udp_field": "TBD",
+          "comment_example": null
+        },
+        {
+          "source_table": "EmailMessage",
+          "source_field": "Subject",
+          "lexical_search": false,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "In progress",
+          "udp_field": "In progress",
+          "comment_example": "Automatic process failed to apply FAN on SR 27352 (NQ)"
+        },
+        {
+          "source_table": "EmailMessage",
+          "source_field": "TextBody",
+          "lexical_search": false,
+          "vector_search": true,
+          "response_type": "Resolution",
+          "udp_table": "In progress",
+          "udp_field": "In progress",
+          "comment_example": "<!-template 18 25 fail to appy FAN -> This is an automated notification sent from the Solutions Delivery ProcessMate workflow tool. Please do not reply. The Service Request No 27352 dated 10-15-2025 09:59:3 has been approved. Due to system issue the FAN could NOT applied to your Quote ID NQ09411278-02. An SFDC case was generated for the Local CPQ team for support and they will contact you shortly to provide an update. The results for the Quote ID NQ09411278-02 and Opportunity OPE-0020386876 are below: RuleUnbuidable TypeApproval StatusFANAction DateComments 81322276 COM Hard Attach Approved FAN5254158 10-16-2025 12:05:37 Regards, SD ProcessMate(Workflow Tool)"
+        }
+      ]
+    }
+  }
+}
