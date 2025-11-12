@@ -2,7 +2,7 @@
 Text Embedding Generator
 
 Generates ONE composite embedding per case combining ALL 44 fields from 6 tables:
-- Model: ChatHPE text-embedding-3-large
+- Model: OpenAI text-embedding-3-large
 - Dimensions: 3,072
 - Single vector per case (NOT dual vectors)
 
@@ -13,28 +13,35 @@ Approach (as per KMS 2.6 PDF):
 4. Benefits: 98% cost savings, faster queries, complete case narrative
 
 Task Reference: Phase 2, Task 2.4
-Updated: November 2025 (KMS 2.6 alignment)
+Updated: November 2025 (KMS 2.6 alignment - using OpenAI API)
 """
 
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Optional
 import logging
 import time
+from openai import OpenAI
 
 
 class EmbeddingGenerator:
-    """Generates text embeddings using ChatHPE API"""
+    """Generates text embeddings using OpenAI API"""
 
-    def __init__(self, api_endpoint: str, api_key: str):
+    def __init__(self, api_key: str, api_endpoint: Optional[str] = None):
         """
-        Initialize Embedding Generator
+        Initialize Embedding Generator with OpenAI API
 
         Args:
-            api_endpoint: ChatHPE API endpoint URL
-            api_key: API authentication key
+            api_key: OpenAI API authentication key
+            api_endpoint: Optional custom API endpoint (defaults to OpenAI)
         """
-        self.api_endpoint = api_endpoint
         self.api_key = api_key
+        self.api_endpoint = api_endpoint
         self.logger = logging.getLogger(__name__)
+
+        # Initialize OpenAI client
+        if api_endpoint:
+            self.client = OpenAI(api_key=api_key, base_url=api_endpoint)
+        else:
+            self.client = OpenAI(api_key=api_key)
 
         # Model configuration
         self.model_name = "text-embedding-3-large"
@@ -47,7 +54,7 @@ class EmbeddingGenerator:
 
     def generate_embedding(self, text: str) -> List[float]:
         """
-        Generate single embedding vector
+        Generate single embedding vector using OpenAI API
 
         Args:
             text: Input text to embed
@@ -59,25 +66,25 @@ class EmbeddingGenerator:
             self.logger.warning("Empty text provided for embedding")
             return [0.0] * self.embedding_dimensions
 
-        # TODO: Call ChatHPE API
-        # response = requests.post(
-        #     self.api_endpoint,
-        #     headers={'Authorization': f'Bearer {self.api_key}'},
-        #     json={
-        #         'model': self.model_name,
-        #         'input': text,
-        #         'dimensions': self.embedding_dimensions
-        #     }
-        # )
-        #
-        # if response.status_code == 200:
-        #     return response.json()['data'][0]['embedding']
+        try:
+            # Call OpenAI API
+            response = self.client.embeddings.create(
+                model=self.model_name,
+                input=text,
+                dimensions=self.embedding_dimensions
+            )
 
-        raise NotImplementedError("Embedding generation not yet implemented")
+            embedding = response.data[0].embedding
+            self.logger.debug(f"Generated embedding with {len(embedding)} dimensions")
+            return embedding
+
+        except Exception as e:
+            self.logger.error(f"Error generating embedding: {e}")
+            raise
 
     def generate_embeddings_batch(self, texts: List[str]) -> List[List[float]]:
         """
-        Generate embeddings for batch of texts (optimized)
+        Generate embeddings for batch of texts (optimized using OpenAI batch API)
 
         Args:
             texts: List of input texts
@@ -94,13 +101,35 @@ class EmbeddingGenerator:
         for i in range(0, len(texts), self.batch_size):
             batch = texts[i:i + self.batch_size]
 
-            # TODO: Batch API call with retry logic
-            # batch_embeddings = self._call_api_with_retry(batch)
-            # embeddings.extend(batch_embeddings)
+            try:
+                # Batch API call
+                response = self.client.embeddings.create(
+                    model=self.model_name,
+                    input=batch,
+                    dimensions=self.embedding_dimensions
+                )
+
+                # Extract embeddings in order
+                batch_embeddings = [item.embedding for item in response.data]
+                embeddings.extend(batch_embeddings)
+
+                self.logger.info(f"Generated {len(batch_embeddings)} embeddings (batch {i//self.batch_size + 1})")
+
+            except Exception as e:
+                self.logger.error(f"Error in batch embedding generation: {e}")
+                # Fallback to individual processing
+                self.logger.info("Falling back to individual embedding generation...")
+                for text in batch:
+                    try:
+                        embedding = self.generate_embedding(text)
+                        embeddings.append(embedding)
+                    except Exception as inner_e:
+                        self.logger.error(f"Failed to generate embedding: {inner_e}")
+                        embeddings.append([0.0] * self.embedding_dimensions)
 
             self.logger.info(f"Processed batch {i // self.batch_size + 1}")
 
-        raise NotImplementedError("Batch embedding generation not yet implemented")
+        return embeddings
 
     def _call_api_with_retry(self, texts: List[str]) -> List[List[float]]:
         """

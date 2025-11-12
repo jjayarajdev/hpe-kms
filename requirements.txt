@@ -29,6 +29,7 @@ weaviate-client==3.25.0
 # ============================================================================
 # NLP & Embeddings
 # ============================================================================
+openai==1.51.0  # OpenAI API for embeddings
 spacy==3.7.2
 # Download model: python -m spacy download en_core_web_sm
 transformers==4.35.0
