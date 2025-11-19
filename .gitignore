@@ -1,3 +1,112 @@
+# ==============================================================================
+# Python
+# ==============================================================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environments
+.venv/
+venv/
+ENV/
+env/
+
+# ==============================================================================
+# Testing
+# ==============================================================================
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.hypothesis/
+*.cover
+.cache
+nosetests.xml
+coverage.xml
+
+# ==============================================================================
+# IDEs
+# ==============================================================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.spyderproject
+.spyproject
+
+# ==============================================================================
+# Jupyter Notebooks
+# ==============================================================================
+.ipynb_checkpoints
+*.ipynb_checkpoints/
+
+# ==============================================================================
+# OS
+# ==============================================================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ==============================================================================
+# Environment & Secrets
+# ==============================================================================
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# ==============================================================================
+# Logs
+# ==============================================================================
+*.log
+logs/
+*.log.*
+
+# ==============================================================================
+# Database
+# ==============================================================================
+*.db
+*.sqlite
+*.sqlite3
+
+# ==============================================================================
+# AI Assistant files
+# ==============================================================================
+.cursor/
+.copilot/
+.ai/
+
+# ==============================================================================
+# KMS PROJECT SPECIFIC
+# ==============================================================================
+
+# Documentation - only track README files
+docs/**/*
+!docs/**/README.md
 
 # SFDC JSON Exports
 data/raw/sfdc_exports/*.json
@@ -6,7 +115,32 @@ data/raw/sfdc_exports/archive/**/*.json
 # Processed data
 data/processed/**/*.parquet
 data/processed/**/*.csv
+data/processed/**/*.pkl
 
 # Embeddings
 data/embeddings/**/*.npy
 data/embeddings/**/*.pkl
+data/embeddings/**/*.pt
+
+# Weaviate Database Browser (development tool)
+weaveDBBrowser/
+
+# Airflow
+airflow-logs/
+airflow.db
+airflow.cfg
+airflow-webserver.pid
+standalone_admin_password.txt
+
+# Docker
+.dockerignore
+
+# Temporary files
+response.json
+output*.json
+temp/
+tmp/
+
+# Monitoring & Metrics
+monitoring/data/
+monitoring/logs/

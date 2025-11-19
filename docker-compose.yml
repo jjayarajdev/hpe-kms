@@ -1,156 +1,405 @@
+---
+# KMS 2.6 Docker Compose - Full Stack
+#
+# Services:
+# - Airflow (webserver, scheduler, worker, postgres, redis)
+# - Weaviate (vector database)
+# - Prometheus (metrics collection)
+# - Grafana (visualization)
+# - Alertmanager (alert routing)
+# - KMS Metrics Server (application metrics)
+# - Supporting services (StatsD exporter, Node exporter)
+
 version: '3.8'
 
-services:
-  # Weaviate Vector Database
-  weaviate:
-    image: semitechnologies/weaviate:1.23.0
-    container_name: kms-weaviate
-    ports:
-      - "8080:8080"
-    environment:
-      QUERY_DEFAULTS_LIMIT: 25
-      AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: 'true'
-      PERSISTENCE_DATA_PATH: '/var/lib/weaviate'
-      DEFAULT_VECTORIZER_MODULE: 'none'
-      ENABLE_MODULES: 'text2vec-openai,generative-openai'
-      CLUSTER_HOSTNAME: 'node1'
-    volumes:
-      - weaviate_data:/var/lib/weaviate
-    networks:
-      - kms-network
-    healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8080/v1/.well-known/ready"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+x-airflow-common: &airflow-common
+  build:
+    context: .
+    dockerfile: Dockerfile.airflow
+  image: kms-airflow:2.8.0
+  environment: &airflow-common-env
+    AIRFLOW__CORE__EXECUTOR: CeleryExecutor
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+    AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:airflow@postgres/airflow
+    AIRFLOW__CELERY__BROKER_URL: redis://:@redis:6379/0
+    AIRFLOW__CORE__FERNET_KEY: ''
+    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
+    AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+    AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session'
+    AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
+    # Fast scheduling for testing (adjust for production)
+    AIRFLOW__SCHEDULER__DAG_DIR_LIST_INTERVAL: '10'  # Scan DAGs every 10 seconds
+    AIRFLOW__SCHEDULER__MIN_FILE_PROCESS_INTERVAL: '10'  # Process files every 10 seconds
+    AIRFLOW__CORE__PARALLELISM: '32'  # Max parallel tasks across all DAGs
+    AIRFLOW__CORE__MAX_ACTIVE_RUNS_PER_DAG: '16'  # Max concurrent DAG runs
+    AIRFLOW__CORE__DAG_CONCURRENCY: '16'  # Max tasks per DAG run
+    # Metrics
+    AIRFLOW__METRICS__STATSD_ON: 'true'
+    AIRFLOW__METRICS__STATSD_HOST: statsd-exporter
+    AIRFLOW__METRICS__STATSD_PORT: 9125
+    # KMS specific
+    OPENAI_API_KEY: ${OPENAI_API_KEY}
+    WEAVIATE_URL: ${WEAVIATE_URL:-http://weaviate:8080}
+    WEAVIATE_API_KEY: ${WEAVIATE_API_KEY:-}
+  volumes:
+    - ./dags:/opt/airflow/dags
+    - ./logs:/opt/airflow/logs
+    - ./plugins:/opt/airflow/plugins
+    - ./src:/opt/airflow/src
+    - ./data:/opt/airflow/data
+  user: "${AIRFLOW_UID:-50000}:0"
+  depends_on: &airflow-common-depends-on
+    redis:
+      condition: service_healthy
+    postgres:
+      condition: service_healthy
 
-  # PostgreSQL for Airflow (optional, can use SQLite for local dev)
+services:
+  # ========================================================================
+  # Airflow Services
+  # ========================================================================
   postgres:
-    image: postgres:15
-    container_name: kms-postgres
+    image: postgres:14
     environment:
       POSTGRES_USER: airflow
       POSTGRES_PASSWORD: airflow
       POSTGRES_DB: airflow
-    ports:
-      - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-    networks:
-      - kms-network
+      - postgres-db-volume:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "airflow"]
       interval: 10s
-      timeout: 5s
       retries: 5
-
-  # Apache Airflow (Standalone mode for local dev)
-  airflow:
-    image: apache/airflow:2.7.3-python3.10
-    container_name: kms-airflow
-    depends_on:
-      postgres:
-        condition: service_healthy
-    environment:
-      AIRFLOW__CORE__EXECUTOR: LocalExecutor
-      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
-      AIRFLOW__CORE__FERNET_KEY: 'your-fernet-key-here-generate-with-python'
-      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
-      AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
-      AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth'
-      AIRFLOW__WEBSERVER__EXPOSE_CONFIG: 'true'
-    ports:
-      - "8081:8080"  # Changed to 8081 to avoid conflict with Weaviate
-    volumes:
-      - ./src/pipeline/dags:/opt/airflow/dags
-      - ./src/pipeline/jobs:/opt/airflow/jobs
-      - ./data:/opt/airflow/data
-      - ./logs:/opt/airflow/logs
-      - airflow_logs:/opt/airflow/logs
+      start_period: 5s
+    restart: always
     networks:
       - kms-network
-    command: >
-      bash -c "airflow db init &&
-               airflow users create --username admin --password admin --firstname Admin --lastname User --role Admin --email admin@example.com &&
-               airflow webserver & airflow scheduler"
+
+  redis:
+    image: redis:7.2
+    expose:
+      - 6379
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 30s
+      retries: 50
+      start_period: 30s
+    restart: always
+    networks:
+      - kms-network
+
+  airflow-webserver:
+    <<: *airflow-common
+    command: webserver
+    ports:
+      - "8081:8080"
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
       interval: 30s
       timeout: 10s
       retries: 5
-
-  # KMS API Service
-  api:
-    build:
-      context: .
-      dockerfile: Dockerfile.api
-    container_name: kms-api
+      start_period: 30s
+    restart: always
     depends_on:
-      weaviate:
-        condition: service_healthy
-    environment:
-      WEAVIATE_URL: http://weaviate:8080
-      LOG_LEVEL: INFO
-      DB_PATH: /app/data/users.db
-    ports:
-      - "8000:8000"
-    volumes:
-      - ./src:/app/src
-      - ./data:/app/data
-      - ./logs:/app/logs
+      <<: *airflow-common-depends-on
+      airflow-init:
+        condition: service_completed_successfully
     networks:
       - kms-network
-    command: uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --reload
+
+  airflow-scheduler:
+    <<: *airflow-common
+    command: scheduler
     healthcheck:
-      test: ["CMD", "curl", "--fail", "http://localhost:8000/api/health"]
+      test: ["CMD", "curl", "--fail", "http://localhost:8974/health"]
       interval: 30s
       timeout: 10s
-      retries: 3
-
-  # Prometheus for metrics
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: kms-prometheus
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-      - ./monitoring/prometheus/rules:/etc/prometheus/rules
-      - prometheus_data:/prometheus
+      retries: 5
+      start_period: 30s
+    restart: always
+    depends_on:
+      <<: *airflow-common-depends-on
+      airflow-init:
+        condition: service_completed_successfully
     networks:
       - kms-network
+
+  airflow-worker:
+    <<: *airflow-common
+    command: celery worker
+    healthcheck:
+      test:
+        - "CMD-SHELL"
+        - 'celery --app airflow.executors.celery_executor.app inspect ping -d "celery@$${HOSTNAME}"'
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    environment:
+      <<: *airflow-common-env
+      DUMB_INIT_SETSID: "0"
+    restart: always
+    depends_on:
+      <<: *airflow-common-depends-on
+      airflow-init:
+        condition: service_completed_successfully
+    networks:
+      - kms-network
+
+  airflow-triggerer:
+    <<: *airflow-common
+    command: triggerer
+    healthcheck:
+      test: ["CMD-SHELL", 'airflow jobs check --job-type TriggererJob --hostname "$${HOSTNAME}"']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    restart: always
+    depends_on:
+      <<: *airflow-common-depends-on
+      airflow-init:
+        condition: service_completed_successfully
+    networks:
+      - kms-network
+
+  airflow-init:
+    <<: *airflow-common
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        function ver() {
+          printf "%04d%04d%04d%04d" $${1//./ }
+        }
+        airflow_version=$$(AIRFLOW__LOGGING__LOGGING_LEVEL=INFO && gosu airflow airflow version)
+        airflow_version_comparable=$$(ver $${airflow_version})
+        min_airflow_version=2.2.0
+        min_airflow_version_comparable=$$(ver $${min_airflow_version})
+        if (( airflow_version_comparable < min_airflow_version_comparable )); then
+          echo
+          echo -e "\033[1;31mERROR!!!: Too old Airflow version $${airflow_version}!\e[0m"
+          echo "The minimum Airflow version supported: $${min_airflow_version}. Only use this or higher!"
+          echo
+          exit 1
+        fi
+        if [[ -z "${AIRFLOW_UID}" ]]; then
+          echo
+          echo -e "\033[1;33mWARNING!!!: AIRFLOW_UID not set!\e[0m"
+          echo "If you are on Linux, you SHOULD follow the instructions below to set "
+          echo "AIRFLOW_UID environment variable, otherwise files will be owned by root."
+          echo "For other operating systems you can get rid of the warning with manually created .env file:"
+          echo "    See: https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html#setting-the-right-airflow-user"
+          echo
+        fi
+        one_meg=1048576
+        mem_available=$$(($$(getconf _PHYS_PAGES) * $$(getconf PAGE_SIZE) / one_meg))
+        cpus_available=$$(grep -cE 'cpu[0-9]+' /proc/stat)
+        disk_available=$$(df / | tail -1 | awk '{print $$4}')
+        warning_resources="false"
+        if (( mem_available < 4000 )) ; then
+          echo
+          echo -e "\033[1;33mWARNING!!!: Not enough memory available for Docker.\e[0m"
+          echo "At least 4GB of memory required. You have $$(numfmt --to iec $$((mem_available * one_meg)))"
+          echo
+          warning_resources="true"
+        fi
+        if (( cpus_available < 2 )); then
+          echo
+          echo -e "\033[1;33mWARNING!!!: Not enough CPUS available for Docker.\e[0m"
+          echo "At least 2 CPUs recommended. You have $${cpus_available}"
+          echo
+          warning_resources="true"
+        fi
+        if (( disk_available < one_meg * 10 )); then
+          echo
+          echo -e "\033[1;33mWARNING!!!: Not enough Disk space available for Docker.\e[0m"
+          echo "At least 10 GBs recommended. You have $$(numfmt --to iec $$((disk_available * 1024 )))"
+          echo
+          warning_resources="true"
+        fi
+        if [[ $${warning_resources} == "true" ]]; then
+          echo
+          echo -e "\033[1;33mWARNING!!!: You have not enough resources to run Airflow (see above)!\e[0m"
+          echo "Please follow the instructions to increase amount of resources available:"
+          echo "   https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html#before-you-begin"
+          echo
+        fi
+        mkdir -p /sources/logs /sources/dags /sources/plugins
+        chown -R "${AIRFLOW_UID}:0" /sources/{logs,dags,plugins}
+        exec /entrypoint airflow version
+    environment:
+      <<: *airflow-common-env
+      _AIRFLOW_DB_MIGRATE: 'true'
+      _AIRFLOW_WWW_USER_CREATE: 'true'
+      _AIRFLOW_WWW_USER_USERNAME: ${_AIRFLOW_WWW_USER_USERNAME:-airflow}
+      _AIRFLOW_WWW_USER_PASSWORD: ${_AIRFLOW_WWW_USER_PASSWORD:-airflow}
+      _PIP_ADDITIONAL_REQUIREMENTS: ''
+    user: "0:0"
+    volumes:
+      - ./:/sources
+    networks:
+      - kms-network
+
+  airflow-cli:
+    <<: *airflow-common
+    profiles:
+      - debug
+    environment:
+      <<: *airflow-common-env
+      CONNECTION_CHECK_MAX_COUNT: "0"
+    command:
+      - bash
+      - -c
+      - airflow
+    networks:
+      - kms-network
+
+  # ========================================================================
+  # Weaviate Vector Database
+  # ========================================================================
+  weaviate:
+    image: semitechnologies/weaviate:1.24.1
+    ports:
+      - "8080:8080"
+      - "2112:2112"  # Prometheus metrics
+    environment:
+      QUERY_DEFAULTS_LIMIT: 25
+      AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: 'true'
+      PERSISTENCE_DATA_PATH: '/var/lib/weaviate'
+      DEFAULT_VECTORIZER_MODULE: 'none'
+      ENABLE_MODULES: ''
+      CLUSTER_HOSTNAME: 'node1'
+      PROMETHEUS_MONITORING_ENABLED: 'true'
+    volumes:
+      - weaviate-data:/var/lib/weaviate
+    restart: always
+    networks:
+      - kms-network
+
+  # ========================================================================
+  # KMS Metrics Server
+  # ========================================================================
+  kms-metrics:
+    build:
+      context: .
+      dockerfile: Dockerfile.metrics
+    ports:
+      - "9090:9090"
+    environment:
+      FLASK_ENV: production
+    volumes:
+      - ./src:/app/src
+    restart: always
+    networks:
+      - kms-network
+
+  # ========================================================================
+  # Prometheus Monitoring
+  # ========================================================================
+  prometheus:
+    image: prom/prometheus:v2.48.0
+    ports:
+      - "9091:9090"
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./monitoring/prometheus/alerts:/etc/prometheus/alerts
+      - prometheus-data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
       - '--web.console.libraries=/usr/share/prometheus/console_libraries'
       - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    restart: always
+    networks:
+      - kms-network
 
-  # Grafana for visualization
+  # ========================================================================
+  # Grafana Visualization
+  # ========================================================================
   grafana:
-    image: grafana/grafana:latest
-    container_name: kms-grafana
-    depends_on:
-      - prometheus
+    image: grafana/grafana:10.2.2
     ports:
       - "3000:3000"
     environment:
-      GF_SECURITY_ADMIN_USER: admin
-      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_SECURITY_ADMIN_USER: ${GF_SECURITY_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GF_SECURITY_ADMIN_PASSWORD:-admin}
       GF_INSTALL_PLUGINS: ''
     volumes:
       - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
       - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
-      - grafana_data:/var/lib/grafana
+      - grafana-data:/var/lib/grafana
+    restart: always
+    depends_on:
+      - prometheus
     networks:
       - kms-network
 
-volumes:
-  weaviate_data:
-  postgres_data:
-  airflow_logs:
-  prometheus_data:
-  grafana_data:
+  # ========================================================================
+  # Alertmanager
+  # ========================================================================
+  alertmanager:
+    image: prom/alertmanager:v0.26.0
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./monitoring/alertmanager:/etc/alertmanager
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
+    restart: always
+    networks:
+      - kms-network
 
+  # ========================================================================
+  # StatsD Exporter (for Airflow metrics)
+  # ========================================================================
+  statsd-exporter:
+    image: prom/statsd-exporter:v0.26.0
+    ports:
+      - "9102:9102"
+      - "9125:9125/udp"
+    command:
+      - '--statsd.mapping-config=/etc/statsd/statsd-mapping.yml'
+    volumes:
+      - ./monitoring/statsd/statsd-mapping.yml:/etc/statsd/statsd-mapping.yml
+    restart: always
+    networks:
+      - kms-network
+
+  # ========================================================================
+  # Node Exporter (for system metrics)
+  # ========================================================================
+  node-exporter:
+    image: prom/node-exporter:v1.7.0
+    ports:
+      - "9100:9100"
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    restart: always
+    networks:
+      - kms-network
+
+# ============================================================================
+# Networks
+# ============================================================================
 networks:
   kms-network:
     driver: bridge
+
+# ============================================================================
+# Volumes
+# ============================================================================
+volumes:
+  postgres-db-volume:
+  weaviate-data:
+  prometheus-data:
+  grafana-data:

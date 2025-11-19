@@ -1,0 +1,303 @@
+---
+# KMS 2.6 Prometheus Alert Rules
+#
+# Alert Categories:
+# 1. Pipeline Health (processing failures, throughput degradation)
+# 2. Data Quality (high PII rate, reconciliation mismatches)
+# 3. System Performance (API errors, high latency, resource exhaustion)
+# 4. Business Metrics (search quality, cost overruns)
+
+groups:
+  # ========================================================================
+  # 1. Pipeline Health Alerts
+  # ========================================================================
+  - name: kms_pipeline_health
+    interval: 1m
+    rules:
+      - alert: PipelineStageFailure
+        expr: |
+          rate(kms_records_processed_total{status="error"}[5m]) > 0
+        for: 2m
+        labels:
+          severity: critical
+          component: pipeline
+        annotations:
+          summary: "Pipeline stage {{ $labels.stage }} is failing"
+          description: "Stage {{ $labels.stage }} for table {{ $labels.table }} has {{ $value }} errors/sec for the last 5 minutes."
+          runbook: "Check pipeline logs and investigate data quality issues."
+
+      - alert: PipelineThroughputLow
+        expr: |
+          kms_pipeline_throughput_records_per_minute{stage="extract"} < 200
+        for: 10m
+        labels:
+          severity: warning
+          component: pipeline
+        annotations:
+          summary: "Pipeline throughput is below target"
+          description: "Current throughput is {{ $value }} records/min, target is ≥300 records/min."
+          runbook: "Check system resources, API rate limits, and database connections."
+
+      - alert: PipelineStalled
+        expr: |
+          increase(kms_records_processed_total[10m]) == 0
+        for: 10m
+        labels:
+          severity: critical
+          component: pipeline
+        annotations:
+          summary: "Pipeline has stalled - no records processed"
+          description: "No records have been processed in stage {{ $labels.stage }} for 10 minutes."
+          runbook: "Check Airflow DAG status, worker health, and logs for errors."
+
+      - alert: PipelineSLAViolation
+        expr: |
+          kms_pipeline_latency_seconds > 14400
+        for: 5m
+        labels:
+          severity: warning
+          component: pipeline
+        annotations:
+          summary: "Pipeline SLA violation - processing time >4 hours"
+          description: "End-to-end pipeline processing time is {{ $value }}s ({{ humanizeDuration $value }})."
+          runbook: "Investigate slow stages, optimize queries, consider scaling workers."
+
+  # ========================================================================
+  # 2. Data Quality Alerts
+  # ========================================================================
+  - name: kms_data_quality
+    interval: 1m
+    rules:
+      - alert: HighReconciliationMismatchRate
+        expr: |
+          kms_reconciliation_mismatch_rate_percent > 5
+        for: 5m
+        labels:
+          severity: critical
+          component: data_quality
+        annotations:
+          summary: "High reconciliation mismatch rate for {{ $labels.table }}"
+          description: "Mismatch rate is {{ $value }}% for table {{ $labels.table }}, threshold is 5%."
+          runbook: "Investigate data corruption, checksum calculation errors, or database sync issues."
+
+      - alert: ExcessivePIIDetection
+        expr: |
+          kms_pii_redaction_rate_percent > 80
+        for: 10m
+        labels:
+          severity: warning
+          component: data_quality
+        annotations:
+          summary: "Excessive PII detection rate for {{ $labels.table }}"
+          description: "{{ $value }}% of fields contain PII in table {{ $labels.table }}."
+          runbook: "Review PII detection rules for false positives or investigate data source changes."
+
+      - alert: SchemaValidationFailures
+        expr: |
+          rate(kms_schema_validation_errors_total[5m]) > 0
+        for: 3m
+        labels:
+          severity: warning
+          component: data_quality
+        annotations:
+          summary: "Schema validation errors detected"
+          description: "Table {{ $labels.table }} field {{ $labels.field }} has {{ $value }} validation errors/sec."
+          runbook: "Check SFDC export format changes or update schema definitions."
+
+      - alert: PIIRemovalFailure
+        expr: |
+          rate(kms_records_processed_total{stage="pii_removal",status="error"}[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: critical
+          component: data_quality
+        annotations:
+          summary: "PII removal stage is failing"
+          description: "PII removal has {{ $value }} errors/sec. This may expose sensitive data."
+          runbook: "Immediately investigate PII removal errors and halt pipeline if necessary."
+
+  # ========================================================================
+  # 3. System Performance Alerts
+  # ========================================================================
+  - name: kms_system_performance
+    interval: 1m
+    rules:
+      - alert: HighAPIErrorRate
+        expr: |
+          kms_api_error_rate_percent > 10
+        for: 5m
+        labels:
+          severity: critical
+          component: api
+        annotations:
+          summary: "High error rate for {{ $labels.api }} API"
+          description: "Error rate is {{ $value }}% for {{ $labels.api }}, threshold is 10%."
+          runbook: "Check API endpoint health, authentication, rate limits, and network connectivity."
+
+      - alert: OpenAIRateLimitApproaching
+        expr: |
+          rate(kms_api_requests_total{api="openai",status="error"}[5m]) > 0.5
+        for: 3m
+        labels:
+          severity: warning
+          component: api
+        annotations:
+          summary: "OpenAI API errors increasing (possible rate limit)"
+          description: "OpenAI API error rate is {{ $value }} errors/sec."
+          runbook: "Check OpenAI rate limits, consider reducing batch size or adding delays."
+
+      - alert: WeaviateConnectionIssues
+        expr: |
+          kms_api_error_rate_percent{api="weaviate"} > 5
+        for: 5m
+        labels:
+          severity: critical
+          component: database
+        annotations:
+          summary: "Weaviate connection issues detected"
+          description: "Weaviate error rate is {{ $value }}%."
+          runbook: "Check Weaviate cluster health, network connectivity, and resource usage."
+
+      - alert: HighSearchLatency
+        expr: |
+          histogram_quantile(0.95, sum(rate(kms_search_query_latency_seconds_bucket[5m])) by (le)) > 0.5
+        for: 10m
+        labels:
+          severity: warning
+          component: search
+        annotations:
+          summary: "Search query latency is high"
+          description: "p95 search latency is {{ $value }}s, target is <150ms."
+          runbook: "Check Weaviate index health, query complexity, and consider index optimization."
+
+      - alert: HighMemoryUsage
+        expr: |
+          kms_memory_usage_bytes{component="embedding_generator"} > 8589934592
+        for: 5m
+        labels:
+          severity: warning
+          component: resources
+        annotations:
+          summary: "High memory usage in {{ $labels.component }}"
+          description: "Memory usage is {{ humanize $value }}B ({{ humanize1024 $value }}iB)."
+          runbook: "Consider reducing batch sizes or scaling horizontally."
+
+      - alert: DatabaseConnectionPoolExhausted
+        expr: |
+          kms_db_connections_idle{database="weaviate"} < 2
+        for: 5m
+        labels:
+          severity: warning
+          component: database
+        annotations:
+          summary: "Database connection pool nearly exhausted"
+          description: "Only {{ $value }} idle connections remaining for {{ $labels.database }}."
+          runbook: "Increase connection pool size or investigate connection leaks."
+
+  # ========================================================================
+  # 4. Business Metrics Alerts
+  # ========================================================================
+  - name: kms_business_metrics
+    interval: 5m
+    rules:
+      - alert: SearchQualityDegradation
+        expr: |
+          avg_over_time(kms_search_results_returned[10m]) < 3
+        for: 15m
+        labels:
+          severity: warning
+          component: search
+        annotations:
+          summary: "Search result quality degraded"
+          description: "Average search results returned is {{ $value }}, expected >5."
+          runbook: "Review query patterns, check vector embeddings quality, investigate index issues."
+
+      - alert: HighSearchFallbackRate
+        expr: |
+          sum(rate(kms_search_queries_total{fallback_stage!="none"}[5m])) / sum(rate(kms_search_queries_total[5m])) > 0.3
+        for: 10m
+        labels:
+          severity: warning
+          component: search
+        annotations:
+          summary: "High search fallback rate"
+          description: "{{ $value | humanizePercentage }} of searches are falling back to broader queries."
+          runbook: "Analyze query patterns, improve metadata filtering, check embedding quality."
+
+      - alert: OpenAICostRunaway
+        expr: |
+          rate(kms_openai_cost_usd_total[1h]) > 10
+        for: 10m
+        labels:
+          severity: critical
+          component: cost
+        annotations:
+          summary: "OpenAI costs increasing rapidly"
+          description: "OpenAI costs are ${{ $value }}/hour, projected ${{ $value | mul 24 }}/day."
+          runbook: "Investigate unexpected API usage, check for retry loops, consider rate limiting."
+
+      - alert: EmbeddingGenerationFailures
+        expr: |
+          rate(kms_embeddings_generated_total{status="error"}[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          component: embeddings
+        annotations:
+          summary: "Embedding generation failures detected"
+          description: "{{ $value }} embeddings/sec are failing to generate."
+          runbook: "Check OpenAI API health, review input text quality, investigate error logs."
+
+      - alert: VectorDBSyncLag
+        expr: |
+          kms_vector_db_records_total{collection="KMSCase"} < 1000
+        for: 30m
+        labels:
+          severity: warning
+          component: database
+        annotations:
+          summary: "Vector database has fewer records than expected"
+          description: "Only {{ $value }} records in Weaviate, expected >1000 after initial load."
+          runbook: "Check data loading pipeline, investigate deletion issues, verify reconciliation."
+
+  # ========================================================================
+  # 5. Airflow DAG Alerts
+  # ========================================================================
+  - name: kms_airflow_dag
+    interval: 5m
+    rules:
+      - alert: DAGExecutionFailure
+        expr: |
+          increase(kms_records_processed_total{status="error"}[30m]) > 100
+        for: 5m
+        labels:
+          severity: critical
+          component: airflow
+        annotations:
+          summary: "Airflow DAG execution failure"
+          description: "More than 100 records failed in the last 30 minutes."
+          runbook: "Check Airflow task logs, investigate task failures, verify DAG configuration."
+
+      - alert: DAGNotRunning
+        expr: |
+          time() - (kms_last_run_info{status="success"} > 0) > 86400
+        for: 1h
+        labels:
+          severity: critical
+          component: airflow
+        annotations:
+          summary: "KMS DAG has not run successfully in >24 hours"
+          description: "Last successful run was {{ $value | humanizeDuration }} ago."
+          runbook: "Check Airflow scheduler, verify DAG is enabled, investigate blocking issues."
+
+      - alert: DAGExecutionSlow
+        expr: |
+          kms_pipeline_latency_seconds > 10800
+        for: 10m
+        labels:
+          severity: warning
+          component: airflow
+        annotations:
+          summary: "DAG execution is slower than expected"
+          description: "DAG execution time is {{ $value | humanizeDuration }}, expected <3 hours."
+          runbook: "Investigate slow tasks, check resource availability, optimize queries."

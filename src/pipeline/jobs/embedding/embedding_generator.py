@@ -143,9 +143,8 @@ class EmbeddingGenerator:
         """
         for attempt in range(self.max_retries):
             try:
-                # TODO: Make API call
-                # return self._call_api(texts)
-                pass
+                # Call OpenAI batch API (implemented below via individual calls)
+                return [self.generate_embedding(text) for text in texts]
             except Exception as e:
                 if attempt < self.max_retries - 1:
                     delay = self.retry_delay * (2 ** attempt)
@@ -197,6 +196,7 @@ class EmbeddingGenerator:
 
         Args:
             case_data: Dictionary with all case fields from 6 tables
+                      Uses actual Salesforce field names (e.g., "Case Number", "Description")
 
         Returns:
             Concatenated text ready for embedding (≤30K chars)
@@ -204,75 +204,112 @@ class EmbeddingGenerator:
         sections = []
 
         # Section 1: Case Header (Case table - core metadata)
-        if 'caseNumber' in case_data or 'subject' in case_data:
-            header_parts = []
-            if case_data.get('caseNumber'):
-                header_parts.append(f"Case: {case_data['caseNumber']}")
-            if case_data.get('subject'):
-                header_parts.append(case_data['subject'])
-            if case_data.get('priority'):
-                header_parts.append(f"Priority: {case_data['priority']}")
-            if case_data.get('status'):
-                header_parts.append(f"Status: {case_data['status']}")
+        # Salesforce field names: "Case Number", "Subject", "Priority", "Status"
+        header_parts = []
+        if case_data.get('Case Number'):
+            header_parts.append(f"Case: {case_data['Case Number']}")
+        if case_data.get('Subject'):
+            header_parts.append(case_data['Subject'])
+        if case_data.get('Priority'):
+            header_parts.append(f"Priority: {case_data['Priority']}")
+        if case_data.get('Status'):
+            header_parts.append(f"Status: {case_data['Status']}")
+        if header_parts:
             sections.append(' | '.join(header_parts))
 
         # Section 2: Issue Description (Case table - issue fields)
+        # Salesforce field names: "Description", "Error_Codes__c", "Issue_Plain_Text__c", "Cause_Plain_Text__c"
         issue_parts = []
-        for field in ['description', 'error_codes', 'issue_plain_text', 'cause_plain_text']:
+        for field in ['Description', 'Error_Codes__c', 'Issue_Plain_Text__c', 'Cause_Plain_Text__c']:
             if case_data.get(field):
                 issue_parts.append(self._clean_html(str(case_data[field])))
         if issue_parts:
             sections.append("ISSUE: " + " | ".join(issue_parts))
 
         # Section 3: Environment (Case table - technical context)
+        # Salesforce field names: "GSD_Environment_Plain_Text__c", "Issue_Type__c", "Product_Line__c"
         env_parts = []
-        for field in ['environment', 'product_type', 'product_line', 'category', 'sub_category']:
+        for field in ['GSD_Environment_Plain_Text__c', 'Issue_Type__c', 'Product_Line__c', 'Product_Number__c']:
             if case_data.get(field):
                 env_parts.append(str(case_data[field]))
         if env_parts:
             sections.append("ENVIRONMENT: " + " | ".join(env_parts))
 
         # Section 4: Resolution (Case table - resolution fields)
+        # Salesforce field names: "Resolution__c", "Resolution_Code__c", "Resolution_Plain_Text__c", "Root_Cause__c"
         resolution_parts = []
-        for field in ['resolution', 'resolution_code', 'resolution_plain_text', 'root_cause']:
+        for field in ['Resolution__c', 'Resolution_Code__c', 'Resolution_Plain_Text__c', 'Root_Cause__c', 'Case_Resolution_Summary__c', 'Close_Comments__c']:
             if case_data.get(field):
                 resolution_parts.append(self._clean_html(str(case_data[field])))
         if resolution_parts:
             sections.append("RESOLUTION: " + " | ".join(resolution_parts))
 
         # Section 5: Tasks (Task table - troubleshooting steps)
+        # Salesforce field names: "Type", "Description"
         if case_data.get('tasks'):
-            task_texts = [self._clean_html(t.get('description', '')) for t in case_data['tasks'] if t.get('description')]
+            task_texts = []
+            for t in case_data['tasks']:
+                task_parts = []
+                if t.get('Type'):
+                    task_parts.append(f"[{t['Type']}]")
+                if t.get('Description'):
+                    task_parts.append(self._clean_html(t['Description']))
+                if task_parts:
+                    task_texts.append(' '.join(task_parts))
             if task_texts:
                 sections.append("TASKS: " + " | ".join(task_texts))
 
         # Section 6: Work Orders (WorkOrder table - field engineer actions)
+        # Salesforce field names: "Subject", "Description", "WorkOrderNumber"
         if case_data.get('workorders'):
             wo_texts = []
             for wo in case_data['workorders']:
-                wo_parts = [wo.get('subject', ''), wo.get('description', '')]
-                wo_texts.extend([self._clean_html(p) for p in wo_parts if p])
+                wo_parts = []
+                if wo.get('WorkOrderNumber'):
+                    wo_parts.append(f"WO#{wo['WorkOrderNumber']}")
+                if wo.get('Subject'):
+                    wo_parts.append(wo['Subject'])
+                if wo.get('Description'):
+                    wo_parts.append(self._clean_html(wo['Description']))
+                if wo_parts:
+                    wo_texts.append(' - '.join(wo_parts))
             if wo_texts:
                 sections.append("WORK ORDERS: " + " | ".join(wo_texts))
 
         # Section 7: Comments (CaseComments table - engineer discussion)
+        # Salesforce field names: "CommentBody"
         if case_data.get('casecomments'):
-            comment_texts = [self._clean_html(c.get('commentBody', '')) for c in case_data['casecomments'] if c.get('commentBody')]
+            comment_texts = [self._clean_html(c.get('CommentBody', '')) for c in case_data['casecomments'] if c.get('CommentBody')]
             if comment_texts:
                 sections.append("COMMENTS: " + " | ".join(comment_texts))
 
         # Section 8: Work Order Feed (WorkOrderFeed table - service notes)
+        # Salesforce field names: "Type", "Body"
         if case_data.get('workorderfeeds'):
-            feed_texts = [self._clean_html(f.get('body', '')) for f in case_data['workorderfeeds'] if f.get('body')]
+            feed_texts = []
+            for f in case_data['workorderfeeds']:
+                feed_parts = []
+                if f.get('Type'):
+                    feed_parts.append(f"[{f['Type']}]")
+                if f.get('Body'):
+                    feed_parts.append(self._clean_html(f['Body']))
+                if feed_parts:
+                    feed_texts.append(' '.join(feed_parts))
             if feed_texts:
                 sections.append("SERVICE NOTES: " + " | ".join(feed_texts))
 
         # Section 9: Email Messages (EmailMessage table - correspondence)
+        # Salesforce field names: "Subject", "TextBody"
         if case_data.get('emails'):
             email_texts = []
             for email in case_data['emails']:
-                email_parts = [email.get('subject', ''), email.get('textBody', '')]
-                email_texts.extend([self._clean_html(p) for p in email_parts if p])
+                email_parts = []
+                if email.get('Subject'):
+                    email_parts.append(f"Subject: {email['Subject']}")
+                if email.get('TextBody'):
+                    email_parts.append(self._clean_html(email['TextBody']))
+                if email_parts:
+                    email_texts.append(' - '.join(email_parts))
             if email_texts:
                 sections.append("EMAILS: " + " | ".join(email_texts))
 
@@ -362,9 +399,26 @@ class EmbeddingGenerator:
                 f"{len(embedding)} != {self.embedding_dimensions}"
             )
 
-        # TODO: Check for NaN/Inf
-        # TODO: Check magnitude
-        # TODO: Optionally normalize
+        # Validate vector values (check for NaN/Inf)
+        import math
+        nan_count = sum(1 for v in embedding if math.isnan(v))
+        inf_count = sum(1 for v in embedding if math.isinf(v))
+
+        if nan_count > 0:
+            self.logger.warning(f"{label} embedding contains {nan_count} NaN values")
+            raise ValueError(f"{label} embedding contains NaN values")
+
+        if inf_count > 0:
+            self.logger.warning(f"{label} embedding contains {inf_count} Inf values")
+            raise ValueError(f"{label} embedding contains Inf values")
+
+        # Check magnitude (vector should not be all zeros)
+        magnitude = math.sqrt(sum(v * v for v in embedding))
+        if magnitude < 1e-10:
+            self.logger.warning(f"{label} embedding has near-zero magnitude: {magnitude}")
+            raise ValueError(f"{label} embedding appears to be zero vector")
+
+        self.logger.debug(f"{label} embedding validation passed (magnitude: {magnitude:.4f})")
 
     def get_cache_key(self, text: str) -> str:
         """
@@ -461,7 +515,8 @@ def main():
     print("✓ Text concatenation and preprocessing working!")
     print("=" * 60)
 
-    # TODO: Test actual embedding generation when API is available
+    # Note: Actual embedding generation requires OPENAI_API_KEY
+    # Run with valid API key to test end-to-end:
     # composite_vec = generator.generate_composite_embedding(concatenated)
     # print(f"\nComposite vector dimensions: {len(composite_vec)}")
 

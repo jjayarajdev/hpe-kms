@@ -1,0 +1,21 @@
+FROM python:3.10-slim
+
+WORKDIR /app
+
+# Install uv for fast dependency resolution
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
+
+# Copy only metrics requirements (lightweight)
+COPY requirements-metrics.txt .
+
+# Install dependencies using uv (much faster than pip)
+RUN uv pip install --system --no-cache -r requirements-metrics.txt
+
+# Copy application code
+COPY src /app/src
+
+# Expose metrics port
+EXPOSE 9090
+
+# Run metrics server
+CMD ["python", "-m", "src.pipeline.monitoring.metrics_server"]

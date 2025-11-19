@@ -1,0 +1,593 @@
+{
+  "dashboard": {
+    "title": "KMS 2.6 Pipeline Monitoring",
+    "tags": ["kms", "vector-search", "pipeline"],
+    "timezone": "browser",
+    "schemaVersion": 38,
+    "version": 1,
+    "refresh": "30s",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Pipeline Overview",
+        "type": "row",
+        "gridPos": {"h": 1, "w": 24, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "Records Processed (Total)",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 1},
+        "targets": [
+          {
+            "expr": "sum(kms_records_processed_total{status=\"success\"})",
+            "legendFormat": "Total Records",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "graphMode": "area",
+          "colorMode": "value",
+          "orientation": "auto",
+          "textMode": "value_and_name"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "color": {"mode": "thresholds"},
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "green"}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 3,
+        "title": "Pipeline Throughput",
+        "type": "gauge",
+        "gridPos": {"h": 4, "w": 6, "x": 6, "y": 1},
+        "targets": [
+          {
+            "expr": "kms_pipeline_throughput_records_per_minute{stage=\"extract\"}",
+            "legendFormat": "Records/Min",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "rpm",
+            "min": 0,
+            "max": 500,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "red"},
+                {"value": 200, "color": "yellow"},
+                {"value": 300, "color": "green"}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 4,
+        "title": "API Error Rate",
+        "type": "gauge",
+        "gridPos": {"h": 4, "w": 6, "x": 12, "y": 1},
+        "targets": [
+          {
+            "expr": "kms_api_error_rate_percent{api=\"openai\"}",
+            "legendFormat": "OpenAI",
+            "refId": "A"
+          },
+          {
+            "expr": "kms_api_error_rate_percent{api=\"weaviate\"}",
+            "legendFormat": "Weaviate",
+            "refId": "B"
+          }
+        ],
+        "options": {
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "min": 0,
+            "max": 100,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "green"},
+                {"value": 5, "color": "yellow"},
+                {"value": 10, "color": "red"}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 5,
+        "title": "Vector DB Records",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 18, "y": 1},
+        "targets": [
+          {
+            "expr": "kms_vector_db_records_total{collection=\"KMSCase\"}",
+            "legendFormat": "Total Cases",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "graphMode": "area",
+          "colorMode": "value",
+          "orientation": "auto",
+          "textMode": "value_and_name"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "color": {"mode": "palette-classic"}
+          }
+        }
+      },
+      {
+        "id": 6,
+        "title": "Pipeline Performance",
+        "type": "row",
+        "gridPos": {"h": 1, "w": 24, "x": 0, "y": 5}
+      },
+      {
+        "id": 7,
+        "title": "Stage Duration (p95)",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 6},
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, sum(rate(kms_stage_duration_seconds_bucket[5m])) by (stage, le))",
+            "legendFormat": "{{stage}}",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          {
+            "format": "s",
+            "label": "Duration"
+          },
+          {
+            "format": "short"
+          }
+        ],
+        "lines": true,
+        "fill": 1,
+        "linewidth": 2,
+        "legend": {
+          "show": true,
+          "values": true,
+          "current": true,
+          "max": true,
+          "avg": true
+        }
+      },
+      {
+        "id": 8,
+        "title": "Records Processed by Stage",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 6},
+        "targets": [
+          {
+            "expr": "rate(kms_records_processed_total{status=\"success\"}[5m])",
+            "legendFormat": "{{stage}} - {{table}}",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          {
+            "format": "rps",
+            "label": "Records/sec"
+          },
+          {
+            "format": "short"
+          }
+        ],
+        "lines": true,
+        "fill": 1,
+        "linewidth": 2,
+        "legend": {
+          "show": true,
+          "values": false
+        }
+      },
+      {
+        "id": 9,
+        "title": "Data Quality",
+        "type": "row",
+        "gridPos": {"h": 1, "w": 24, "x": 0, "y": 14}
+      },
+      {
+        "id": 10,
+        "title": "PII Detection Rate by Table",
+        "type": "bargauge",
+        "gridPos": {"h": 8, "w": 8, "x": 0, "y": 15},
+        "targets": [
+          {
+            "expr": "kms_pii_redaction_rate_percent",
+            "legendFormat": "{{table}}",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "orientation": "horizontal",
+          "displayMode": "gradient",
+          "showUnfilled": true
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "min": 0,
+            "max": 100,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "green"},
+                {"value": 30, "color": "yellow"},
+                {"value": 70, "color": "red"}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 11,
+        "title": "PII Detections by Type",
+        "type": "piechart",
+        "gridPos": {"h": 8, "w": 8, "x": 8, "y": 15},
+        "targets": [
+          {
+            "expr": "sum(kms_pii_detections_total) by (detector_type)",
+            "legendFormat": "{{detector_type}}",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "pieType": "pie",
+          "displayLabels": ["name", "percent"],
+          "legend": {
+            "show": true,
+            "placement": "right"
+          }
+        }
+      },
+      {
+        "id": 12,
+        "title": "Reconciliation Mismatch Rate",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 8, "x": 16, "y": 15},
+        "targets": [
+          {
+            "expr": "kms_reconciliation_mismatch_rate_percent",
+            "legendFormat": "{{table}}",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          {
+            "format": "percent",
+            "label": "Mismatch Rate",
+            "max": 10
+          },
+          {
+            "format": "short"
+          }
+        ],
+        "lines": true,
+        "fill": 1,
+        "linewidth": 2,
+        "legend": {
+          "show": true,
+          "values": true,
+          "current": true,
+          "max": true
+        },
+        "alert": {
+          "conditions": [
+            {
+              "evaluator": {
+                "params": [5],
+                "type": "gt"
+              },
+              "operator": {
+                "type": "and"
+              },
+              "query": {
+                "params": ["A", "5m", "now"]
+              },
+              "reducer": {
+                "params": [],
+                "type": "avg"
+              },
+              "type": "query"
+            }
+          ],
+          "executionErrorState": "alerting",
+          "frequency": "1m",
+          "handler": 1,
+          "name": "High Mismatch Rate",
+          "noDataState": "no_data",
+          "notifications": []
+        }
+      },
+      {
+        "id": 13,
+        "title": "API Performance",
+        "type": "row",
+        "gridPos": {"h": 1, "w": 24, "x": 0, "y": 23}
+      },
+      {
+        "id": 14,
+        "title": "API Request Rate",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 24},
+        "targets": [
+          {
+            "expr": "sum(rate(kms_api_requests_total[5m])) by (api, status)",
+            "legendFormat": "{{api}} - {{status}}",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          {
+            "format": "reqps",
+            "label": "Requests/sec"
+          },
+          {
+            "format": "short"
+          }
+        ],
+        "lines": true,
+        "fill": 1,
+        "linewidth": 2,
+        "stack": true,
+        "legend": {
+          "show": true,
+          "values": false
+        }
+      },
+      {
+        "id": 15,
+        "title": "API Latency (p95)",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 24},
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, sum(rate(kms_api_request_duration_seconds_bucket[5m])) by (api, le))",
+            "legendFormat": "{{api}}",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          {
+            "format": "s",
+            "label": "Latency"
+          },
+          {
+            "format": "short"
+          }
+        ],
+        "lines": true,
+        "fill": 1,
+        "linewidth": 2,
+        "legend": {
+          "show": true,
+          "values": true,
+          "current": true,
+          "max": true,
+          "avg": true
+        }
+      },
+      {
+        "id": 16,
+        "title": "Search Performance",
+        "type": "row",
+        "gridPos": {"h": 1, "w": 24, "x": 0, "y": 32}
+      },
+      {
+        "id": 17,
+        "title": "Search Query Rate",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 33},
+        "targets": [
+          {
+            "expr": "sum(rate(kms_search_queries_total[5m]))",
+            "legendFormat": "Queries/sec",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "graphMode": "area",
+          "colorMode": "value",
+          "orientation": "auto",
+          "textMode": "value_and_name"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "reqps",
+            "color": {"mode": "thresholds"},
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "green"}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 18,
+        "title": "Search Latency (p95)",
+        "type": "gauge",
+        "gridPos": {"h": 4, "w": 6, "x": 6, "y": 33},
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, sum(rate(kms_search_query_latency_seconds_bucket[5m])) by (le))",
+            "legendFormat": "p95",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "s",
+            "min": 0,
+            "max": 1,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "green"},
+                {"value": 0.15, "color": "yellow"},
+                {"value": 0.5, "color": "red"}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 19,
+        "title": "Search Fallback Rate",
+        "type": "graph",
+        "gridPos": {"h": 4, "w": 12, "x": 12, "y": 33},
+        "targets": [
+          {
+            "expr": "sum(rate(kms_search_queries_total[5m])) by (fallback_stage)",
+            "legendFormat": "{{fallback_stage}}",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          {
+            "format": "reqps",
+            "label": "Queries/sec"
+          },
+          {
+            "format": "short"
+          }
+        ],
+        "lines": true,
+        "fill": 1,
+        "linewidth": 2,
+        "stack": true,
+        "legend": {
+          "show": true,
+          "values": false
+        }
+      },
+      {
+        "id": 20,
+        "title": "Cost & Resource Usage",
+        "type": "row",
+        "gridPos": {"h": 1, "w": 24, "x": 0, "y": 37}
+      },
+      {
+        "id": 21,
+        "title": "OpenAI Cost (Total)",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 38},
+        "targets": [
+          {
+            "expr": "sum(kms_openai_cost_usd_total)",
+            "legendFormat": "Total Cost",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "graphMode": "area",
+          "colorMode": "value",
+          "orientation": "auto",
+          "textMode": "value_and_name"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "currencyUSD",
+            "color": {"mode": "thresholds"},
+            "decimals": 2,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "green"}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 22,
+        "title": "OpenAI Tokens Used",
+        "type": "graph",
+        "gridPos": {"h": 4, "w": 9, "x": 6, "y": 38},
+        "targets": [
+          {
+            "expr": "rate(kms_openai_tokens_used_total[5m])",
+            "legendFormat": "{{operation}}",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          {
+            "format": "short",
+            "label": "Tokens/sec"
+          },
+          {
+            "format": "short"
+          }
+        ],
+        "lines": true,
+        "fill": 1,
+        "linewidth": 2,
+        "legend": {
+          "show": true,
+          "values": false
+        }
+      },
+      {
+        "id": 23,
+        "title": "Memory Usage",
+        "type": "graph",
+        "gridPos": {"h": 4, "w": 9, "x": 15, "y": 38},
+        "targets": [
+          {
+            "expr": "kms_memory_usage_bytes / 1024 / 1024",
+            "legendFormat": "{{component}}",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          {
+            "format": "decmbytes",
+            "label": "Memory (MB)"
+          },
+          {
+            "format": "short"
+          }
+        ],
+        "lines": true,
+        "fill": 1,
+        "linewidth": 2,
+        "legend": {
+          "show": true,
+          "values": true,
+          "current": true
+        }
+      }
+    ]
+  }
+}

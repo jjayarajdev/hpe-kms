@@ -1,0 +1,122 @@
+---
+# Alertmanager Configuration for KMS 2.6
+#
+# Routes alerts to appropriate channels based on severity and component
+
+global:
+  resolve_timeout: 5m
+  smtp_smarthost: 'smtp.hpe.com:587'
+  smtp_from: 'kms-alerts@hpe.com'
+  smtp_auth_username: 'kms-alerts@hpe.com'
+  smtp_auth_password: '${SMTP_PASSWORD}'
+
+# Alert routing tree
+route:
+  group_by: ['alertname', 'cluster', 'component']
+  group_wait: 10s
+  group_interval: 10s
+  repeat_interval: 12h
+  receiver: 'kms-team'
+
+  routes:
+    # Critical alerts - immediate notification
+    - match:
+        severity: critical
+      receiver: 'kms-oncall'
+      group_wait: 5s
+      repeat_interval: 4h
+
+    # Data quality alerts - notify data team
+    - match:
+        component: data_quality
+      receiver: 'kms-data-team'
+      group_wait: 30s
+      repeat_interval: 24h
+
+    # Cost alerts - notify management
+    - match:
+        component: cost
+      receiver: 'kms-management'
+      group_wait: 1m
+      repeat_interval: 24h
+
+    # API alerts
+    - match:
+        component: api
+      receiver: 'kms-infrastructure'
+      group_wait: 1m
+      repeat_interval: 12h
+
+# Receivers (notification channels)
+receivers:
+  # Default receiver - KMS team email
+  - name: 'kms-team'
+    email_configs:
+      - to: 'kms-team@hpe.com'
+        headers:
+          Subject: '[KMS Alert] {{ .GroupLabels.alertname }}'
+        html: |
+          {{ range .Alerts }}
+          <b>Alert:</b> {{ .Labels.alertname }}<br>
+          <b>Severity:</b> {{ .Labels.severity }}<br>
+          <b>Component:</b> {{ .Labels.component }}<br>
+          <b>Summary:</b> {{ .Annotations.summary }}<br>
+          <b>Description:</b> {{ .Annotations.description }}<br>
+          <b>Runbook:</b> {{ .Annotations.runbook }}<br>
+          <br>
+          {{ end }}
+
+  # On-call engineer - critical alerts
+  - name: 'kms-oncall'
+    email_configs:
+      - to: 'kms-oncall@hpe.com'
+        headers:
+          Subject: '[KMS CRITICAL] {{ .GroupLabels.alertname }}'
+    # Uncomment for PagerDuty integration
+    # pagerduty_configs:
+    #   - service_key: '${PAGERDUTY_SERVICE_KEY}'
+    #     severity: 'critical'
+
+  # Data team
+  - name: 'kms-data-team'
+    email_configs:
+      - to: 'kms-data-team@hpe.com'
+        headers:
+          Subject: '[KMS Data Quality] {{ .GroupLabels.alertname }}'
+
+  # Management - cost alerts
+  - name: 'kms-management'
+    email_configs:
+      - to: 'kms-management@hpe.com'
+        headers:
+          Subject: '[KMS Cost Alert] {{ .GroupLabels.alertname }}'
+
+  # Infrastructure team - API/system alerts
+  - name: 'kms-infrastructure'
+    email_configs:
+      - to: 'kms-infrastructure@hpe.com'
+        headers:
+          Subject: '[KMS Infrastructure] {{ .GroupLabels.alertname }}'
+
+# Inhibition rules (suppress certain alerts when others are firing)
+inhibit_rules:
+  # Suppress warning alerts if critical alert for same component is firing
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['component', 'cluster']
+
+  # Suppress pipeline throughput alerts if pipeline is stalled
+  - source_match:
+      alertname: 'PipelineStalled'
+    target_match:
+      alertname: 'PipelineThroughputLow'
+    equal: ['cluster']
+
+  # Suppress API latency alerts if API has high error rate
+  - source_match:
+      alertname: 'HighAPIErrorRate'
+    target_match:
+      alertname: 'HighSearchLatency'
+    equal: ['api', 'cluster']
